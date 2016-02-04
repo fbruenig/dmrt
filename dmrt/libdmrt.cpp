@@ -18,12 +18,9 @@ static PyObject* py_dmrtMain(PyObject* self, PyObject* args)
         float end;
         const char *name = "dmrtlib";
 
-        int sts;
-
         if (!PyArg_ParseTuple(args, "ssfffsh", &infile, &outfile, &start, &interval,&end,&mode,&verb))
             return NULL;
 
-        char *s = "Closing libdmrt...\n";
         dmrtMain prog = dmrtMain(mode,verb);
         /*
         cout << infile << endl;
@@ -42,17 +39,17 @@ static PyObject* py_dmrtMain(PyObject* self, PyObject* args)
         PyObject * TwoDList =NULL;
         PyObject * TwoDListCounts =NULL;
 
-        if (strncmp(mode,"rt",2)==0 || strncmp(mode,"mftp",2)==0)
+        if (strncmp(mode,"rt",2)==0 || strncmp(mode,"mftp",4)==0 || strncmp(mode,"cftp",4)==0)
         {
             size_t veclength = tes->size()-1;
             TwoDList = PyList_New(veclength+1);
             PyObject * PListIt = NULL;
             PListIt = PyList_New(veclength);
-            for(int i = 0; i < veclength ; i++ )
+            for(size_t i = 0; i < veclength ; i++ )
             {
                 PyObject * PList4 = NULL;
                 PList4 = PyList_New(veclength);
-                for(int j = 0; j < veclength ; j++ )
+                for(size_t j = 0; j < veclength ; j++ )
                 {
                     PyList_SetItem(PList4,j, Py_BuildValue("f", (*tes)[i][j]));
                 }
@@ -61,11 +58,11 @@ static PyObject* py_dmrtMain(PyObject* self, PyObject* args)
             }
             PyList_SetItem(TwoDList,veclength,Py_BuildValue("O",PListIt));
             TwoDListCounts = PyList_New(veclength);
-            for(int i = 0; i < veclength ; i++ )
+            for(size_t i = 0; i < veclength ; i++ )
             {
                 PyObject * PList4 = NULL;
                 PList4 = PyList_New(veclength);
-                for(int j = 0; j < veclength ; j++ )
+                for(size_t j = 0; j < veclength ; j++ )
                 {
                     PyList_SetItem(PList4,j, Py_BuildValue("i", (*count)[i][j]));
                 }
@@ -86,8 +83,6 @@ static PyObject* py_dmrtMainInp(PyObject* self, PyObject* args)
         float interval;
         float end;
         const char *name = "dmrtlib";
-
-        int sts;
 
         if (!PyArg_ParseTuple(args, "Offfsh",&inputVec1, &start, &interval,&end,&mode,&verb))
             return NULL;
@@ -115,7 +110,6 @@ static PyObject* py_dmrtMainInp(PyObject* self, PyObject* args)
             data[i].assign(in+i*2,in+i*2+2);
         }
 
-        char *s = "Closing libdmrt...\n";
         dmrtMain prog = dmrtMain(mode,verb);
         if (verb==1){cout << "Entering in " << mode << " mode" << endl;}
 
@@ -130,17 +124,17 @@ static PyObject* py_dmrtMainInp(PyObject* self, PyObject* args)
         PyObject * TwoDList =NULL;
         PyObject * TwoDListCounts =NULL;
 
-        if (strncmp(mode,"rt",2)==0 || strncmp(mode,"mftp",2)==0)
+        if (strncmp(mode,"rt",2)==0 || strncmp(mode+1,"ftp",3)==0)
         {
             size_t veclength = tes->size()-1;
             TwoDList = PyList_New(veclength+1);
             PyObject * PListIt = NULL;
             PListIt = PyList_New(veclength);
-            for(int i = 0; i < veclength ; i++ )
+            for(size_t i = 0; i < veclength ; i++ )
             {
                 PyObject * PList4 = NULL;
                 PList4 = PyList_New(veclength);
-                for(int j = 0; j < veclength ; j++ )
+                for(size_t j = 0; j < veclength ; j++ )
                 {
                     PyList_SetItem(PList4,j, Py_BuildValue("f", (*tes)[i][j]));
                 }
@@ -149,13 +143,14 @@ static PyObject* py_dmrtMainInp(PyObject* self, PyObject* args)
             }
             PyList_SetItem(TwoDList,veclength,Py_BuildValue("O",PListIt));
             TwoDListCounts = PyList_New(veclength);
-            for(int i = 0; i < veclength ; i++ )
+            for(size_t i = 0; i < veclength ; i++ )
             {
                 PyObject * PList4 = NULL;
                 PList4 = PyList_New(veclength);
-                for(int j = 0; j < veclength ; j++ )
+                for(size_t j = 0; j < veclength ; j++ )
                 {
                     PyList_SetItem(PList4,j, Py_BuildValue("i", (*count)[i][j]));
+                    //cout << (*count)[i][j] << endl;
                 }
                 PyList_SetItem(TwoDListCounts,i,Py_BuildValue("O",PList4));
             }

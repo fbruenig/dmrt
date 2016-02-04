@@ -11,31 +11,53 @@ public:
     dmrtalg2();
     dmrtalg2(const char *mode, bool verb, const double escapeD, const double minD, const double dR);
 
+    //Helper functions:
+
     void getRadiiVec(vector<double> *dmrt, const double escapeD, const double minD, const double dR);
+    void initializeLocalVectors();
+    int getVecLength(){return mVecLength;}
+    vector<double> getRadii(){return (*mRadii);}
+    void findStart(bool &started, const double d);
+    void findStart2(bool &started, const double d);
+    double interpolate(const double t1, const double t2, const double r1, const double r2);
+
+
+    // MFTP/RTT extraction (option == mftp oder rt)
+
     void getAllMFPTLoop(vector<double> &dmrt, vector<int> &counts, const vector<vector<double> > *radii, const vector<vector<double> > *vec, int dir);
     void getAllMFPTfrom2DVector(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const vector<vector<double> > *radii, const vector<vector<double> > *vec);
+
     void getMFPTfrom2DVectorCross(double &retMftp, int &retCounts, const vector<vector<double> > *vec, double absorbD, double escapeD, int direction);
 
     void getMFPTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const vector<vector<double> > *vec);
     void getMFPTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const vector<vector<double> > *vec);
-    void updateVectorsMFPT(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time);
-
-    void updateVectorsRTT(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time);
+    void getRTTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const vector<vector<double> > *vec);
     void getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const vector<vector<double> > *vec);
-
-    void initializeLocalVectors();
-
-    int getVecLength(){return mVecLength;}
-    vector<double> getRadii(){return (*mRadii);}
-
+    void updateVectorsMFPT(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time);
+    void updateVectorsRTT(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time);
 
     void updateVectorsMFPTCont(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time);
-    void getRTTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const vector<vector<double> > *vec);
-
     void updateDMRTatQf(const int i, vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time);
     void updateQfatQ(const int i, const double time);
-    void findStart(bool &started, const double d);
-    double interpolate(const double t1, const double t2, const double r1, const double r2);
+
+
+    // p(tp|r) extraction: (option== tftp)
+
+    void updateCMatrixTFPT(vector<vector<double> > &counts);
+    void updateCMatrixTFPT(vector<vector<int> > &counts);
+    void getTFPTfrom2DVectorCross(vector<vector<double> > &normal, vector<vector<int> > &counts, const vector<vector<double> > *vec);
+
+
+
+    // Commitor extraction: (option== cftp)
+
+    void getFPTfrom2DVectorCross(vector<vector<int> > &counts, const vector<vector<double> > *vec);
+    void updateVectorsFPT(vector<vector<int> > &counts);
+    void updateCountsatQ(const int i);
+    void updateCountsatQf(const int i, vector<vector<int> > &counts);
+    void updateCountsatQReturn(const int i);
+    void updateCountsatQfReturn(const int i, vector<vector<int> > &counts);
+
 private:
 
     double mEpsilon = 0.00000001;
