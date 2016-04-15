@@ -103,9 +103,13 @@ void dmrtalg2::updateQfatQ(const int i,const double time)
     {
         locStart[mInd][i]=time;
         locDmrt[mInd][i]  =0.0;
+        locCounts[mInd][i] = 1;
     }
-    locDmrt[mInd][i]+=  locStart[mInd][i] -time;
-    locCounts[mInd][i]++;
+    else
+    {
+        locDmrt[mInd][i]+=  locStart[mInd][i] -time;
+        locCounts[mInd][i]++;
+    }
 }
 
 
@@ -202,7 +206,8 @@ void dmrtalg2::getRadiiVec(vector<double> *dmrt, const double escapeD, const dou
         vecLength = (size_t)((escapeD-minD)/dR)+1;
         for(size_t i =0 ; i < vecLength; i++)
         {
-            dmrt->push_back(minD+dR*(int(i)-1));
+            //dmrt->push_back(minD+dR*(int(i)-1));
+            dmrt->push_back(minD+dR*(int(i)));
         }
     }
 }
@@ -230,6 +235,11 @@ void dmrtalg2::getMFPTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vec
                     }
                     mInd++;
                 }
+                //for (int j=0;j< int(mInd);j++)
+                //{
+                    // update forward dmrts for given Qf at mInd
+                //    updateDMRTatQf(j,dmrt,counts,(*vec)[i][0]);
+                //}
                 if (mInd == mVecLength-1)
                 {
                     started = false;
@@ -250,6 +260,7 @@ void dmrtalg2::getMFPTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vec
         }
         else
         {
+            initializeLocalVectors();
             findStart(started,(*vec)[i][1]);
         }
     }
