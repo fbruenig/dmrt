@@ -200,7 +200,7 @@ void dmrtalg2::getRadiiVec(vector<double> *dmrt, const double escapeD, const dou
     if (escapeD>minD)
     {
         vecLength = (size_t)((escapeD-minD)/dR)+1;
-        for(size_t i =0 ; i < vecLength; i++)
+        for(size_t i =1 ; i < vecLength; i++)
         {
             dmrt->push_back(minD+dR*(int(i)-1));
         }
