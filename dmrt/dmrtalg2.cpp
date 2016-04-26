@@ -370,8 +370,7 @@ void dmrtalg2::getMFPTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<ve
 }
 
 
-
-void dmrtalg2::getTFPTfrom2DVectorCross(vector<vector<double> > &normal,vector<vector<int> > &counts,const vector<vector<double> > *vec)
+void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<vector<int> > &counts, const vector<vector<double> > *vec)
 {
     bool started = false;
     int timer = 0;
@@ -387,6 +386,7 @@ void dmrtalg2::getTFPTfrom2DVectorCross(vector<vector<double> > &normal,vector<v
             locCounts = vector<vector<int> >(mVecLength,vector<int>(mVecLength,0));
             bool newStart=false;
             findStart2(newStart,(*vec)[i][1]);
+            // search for start of trajectory between the final states A,B
             while(newStart==true && i<(*vec).size()-3)
             {
                 i++;

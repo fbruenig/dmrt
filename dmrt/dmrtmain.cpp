@@ -193,6 +193,7 @@ void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<i
         {
             if (strncmp(this->mMode+4,"bins",4)==0)
             {
+                cout << "Warning! Mode not implemented in current version!" << endl;
                 //eval.getFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),vec);
             }
             else if (strncmp(this->mMode+4,"cross",5)==0)
@@ -205,13 +206,17 @@ void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<i
         {
             if (strncmp(this->mMode+4,"bins",4)==0)
             {
+                cout << "Initial config: "<< vecLength << endl;
                 //eval.getFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),vec);
+                eval.getTFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),vec);
+                cout << (*finalDmrts)[0][0] << " " <<  (*finalDmrts)[10][0] << " " << (*finalDmrts)[20][0] << endl;
             }
             else if (strncmp(this->mMode+4,"cross",5)==0)
             {
                 cout << "Initial config: "<< vecLength << endl;
+                cout << "TFTPCROSS not implemented (in fact incorrect!): Calling TFTPBINS"<< endl;
                 //eval.getTFPTfrom2DVectorCross((*finalDmrts)[0][0],(*finalDmrts)[0][1],(*finalCounts),vec);
-                eval.getTFPTfrom2DVectorCross((*finalDmrts),(*finalCounts),vec);
+                eval.getTFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),vec);
                 cout << (*finalDmrts)[0][0] << " " <<  (*finalDmrts)[10][0] << " " << (*finalDmrts)[20][0] << endl;
             }
         }

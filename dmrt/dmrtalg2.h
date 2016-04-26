@@ -45,7 +45,7 @@ public:
 
     void updateCMatrixTFPT(vector<vector<double> > &counts);
     void updateCMatrixTFPT(vector<vector<int> > &counts);
-    void getTFPTfrom2DVectorCross(vector<vector<double> > &normal, vector<vector<int> > &counts, const vector<vector<double> > *vec);
+    void getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<vector<int> > &counts, const vector<vector<double> > *vec);
 
 
 
