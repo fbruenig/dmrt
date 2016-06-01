@@ -165,8 +165,11 @@ void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<i
         part++;
         if (!vec || vec->size()!= MAXDOUBLEVEC)
         {
-            cout << "Vecsize: " << vec->size()<< endl;
-            cout << "Reached end of file in this run" << endl;
+            if(mVerb)
+            {
+                cout << "Vecsize: " << vec->size()<< endl;
+                cout << "Reached end of file in this run" << endl;
+            }
             success = false;
         }
         if (mVerb){cout << "Read part "<< part << " of file. Evaluating..." << endl;}
@@ -224,14 +227,16 @@ void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<i
             }
         }
     }
-    cout << "run complete!"<< endl;
+
+    if(mVerb){cout << mMode <<" analysis complete!"<< endl;}
+
     vector<double> radii = eval.getRadii();
 
     for (int i=0;i<vecLength;i++)
     {
         (*finalDmrts)[vecLength][i]=radii[i];
     }
-    (*finalDmrts)[vecLength][vecLength-1]=(*finalDmrts)[vecLength][vecLength-1]+((*finalDmrts)[vecLength][2]-(*finalDmrts)[vecLength][1]);
+    (*finalDmrts)[vecLength][vecLength-1]=(*finalDmrts)[vecLength][vecLength-2]+((*finalDmrts)[vecLength][2]-(*finalDmrts)[vecLength][1]);
 
 
     if(this->mVerb){cout << "Finished calculation!" << endl;}
