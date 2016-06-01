@@ -8,14 +8,15 @@ dmrtalg2::dmrtalg2()
 {
 }
 
-dmrtalg2::dmrtalg2(const char *mode, bool verb, const double escapeD, const double minD, const double dR)
+dmrtalg2::dmrtalg2(const char *mode, bool verb, const double escapeD, const double minD, const double dR, const int dataColumn)
 {
-    this->mMode=mode;
-    this->mVerb=verb;
-    this->mRadii = new vector<double>;
-    this->mInd = 0;
+    mMode=mode;
+    mVerb=verb;
+    mRadii = new vector<double>;
+    mInd = 0;
+    mDataColumn = dataColumn;
     getRadiiVec(mRadii,escapeD,minD,dR);
-    this->mVecLength = mRadii->size();
+    mVecLength = mRadii->size();
     initializeLocalVectors();
 }
 
@@ -204,7 +205,7 @@ void dmrtalg2::getRadiiVec(vector<double> *dmrt, const double escapeD, const dou
     if (escapeD>minD)
     {
         vecLength = (size_t)((escapeD-minD)/dR)+1;
-        for(size_t i =1 ; i < vecLength; i++)
+        for(size_t i =0 ; i < vecLength; i++)
         {
             //dmrt->push_back(minD+dR*(int(i)-1));
             dmrt->push_back(minD+dR*(int(i)));
@@ -224,9 +225,9 @@ void dmrtalg2::getMFPTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vec
         }
         if(started == true)
         {
-            if((*vec)[i][1]>(*mRadii)[mInd+1])
+            if((*vec)[i][mDataColumn]>(*mRadii)[mInd+1])
             {
-                while((*vec)[i][1]>(*mRadii)[mInd+1] && (int)mInd < mVecLength-1)
+                while((*vec)[i][mDataColumn]>(*mRadii)[mInd+1] && (int)mInd < mVecLength-1)
                 {
                     for (int j=0;j< int(mInd);j++)
                     {
@@ -245,9 +246,9 @@ void dmrtalg2::getMFPTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vec
                     started = false;
                 }
             }
-            else if((*vec)[i][1]<(*mRadii)[mInd])
+            else if((*vec)[i][mDataColumn]<(*mRadii)[mInd])
             {
-                while((*vec)[i][1]<(*mRadii)[mInd] && mInd > 0)
+                while((*vec)[i][mDataColumn]<(*mRadii)[mInd] && mInd > 0)
                 {
                     mInd--;
                 }
@@ -261,7 +262,7 @@ void dmrtalg2::getMFPTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vec
         else
         {
             initializeLocalVectors();
-            findStart(started,(*vec)[i][1]);
+            findStart(started,(*vec)[i][mDataColumn]);
         }
     }
 }
@@ -278,9 +279,9 @@ void dmrtalg2::getRTTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vect
         }
         if(started == true)
         {
-            if((*vec)[i][1]>(*mRadii)[mInd+1])
+            if((*vec)[i][mDataColumn]>(*mRadii)[mInd+1])
             {
-                while((*vec)[i][1]>(*mRadii)[mInd+1] && (int)mInd < mVecLength-1)
+                while((*vec)[i][mDataColumn]>(*mRadii)[mInd+1] && (int)mInd < mVecLength-1)
                 {
                     for (int j=0;j< int(mInd);j++)
                     {
@@ -294,9 +295,9 @@ void dmrtalg2::getRTTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vect
                     started = false;
                 }
             }
-            else if((*vec)[i][1]<(*mRadii)[mInd])
+            else if((*vec)[i][mDataColumn]<(*mRadii)[mInd])
             {
-                while((*vec)[i][1]<(*mRadii)[mInd] && mInd > 0)
+                while((*vec)[i][mDataColumn]<(*mRadii)[mInd] && mInd > 0)
                 {
                     mInd--;
                     for (int j=0;j< int(mInd);j++)
@@ -314,7 +315,7 @@ void dmrtalg2::getRTTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vect
         }
         else
         {
-            findStart(started,(*vec)[i][1]);
+            findStart(started,(*vec)[i][mDataColumn]);
         }
     }
 }
@@ -331,12 +332,12 @@ void dmrtalg2::getMFPTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<ve
         }
         if(started == true)
         {
-            if((*vec)[i][1]>(*mRadii)[mInd+1])
+            if((*vec)[i][mDataColumn]>(*mRadii)[mInd+1])
             {
-                while((*vec)[i][1]>(*mRadii)[mInd+1] && (int)mInd < mVecLength-1)
+                while((*vec)[i][mDataColumn]>(*mRadii)[mInd+1] && (int)mInd < mVecLength-1)
                 {
                     //MFPT:
-                    double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][1],(*vec)[i][1]);
+                    double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
                     updateVectorsMFPT(dmrt,counts,interTime);
                     //updateVectorsMFPT(dmrt,counts,(*vec)[i][0]);
                     mInd++;
@@ -346,13 +347,13 @@ void dmrtalg2::getMFPTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<ve
                     started = false;
                 }
             }
-            else if((*vec)[i][1]<(*mRadii)[mInd])
+            else if((*vec)[i][mDataColumn]<(*mRadii)[mInd])
             {
-                while((*vec)[i][1]<(*mRadii)[mInd] && mInd > 0)
+                while((*vec)[i][mDataColumn]<(*mRadii)[mInd] && mInd > 0)
                 {
                     mInd--;
                     //MFPT:
-                    double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][1],(*vec)[i][1]);
+                    double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
                     updateVectorsMFPT(dmrt,counts,interTime);
                     //updateVectorsMFPT(dmrt,counts,(*vec)[i][0]);
                 }
@@ -364,7 +365,7 @@ void dmrtalg2::getMFPTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<ve
         }
         else
         {
-            findStart(started,(*vec)[i][1]);
+            findStart(started,(*vec)[i][mDataColumn]);
         }
     }
 }
@@ -385,13 +386,13 @@ void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<v
         {
             locCounts = vector<vector<int> >(mVecLength,vector<int>(mVecLength,0));
             bool newStart=false;
-            findStart2(newStart,(*vec)[i][1]);
+            findStart2(newStart,(*vec)[i][mDataColumn]);
             // search for start of trajectory between the final states A,B
             while(newStart==true && i<(*vec).size()-3)
             {
                 i++;
                 newStart=false;
-                findStart2(newStart,(*vec)[i][1]);
+                findStart2(newStart,(*vec)[i][mDataColumn]);
             }
             started = false;
             if(i<(*vec).size()-1)
@@ -403,9 +404,9 @@ void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<v
         {
             //cout << mInd << endl;
             timer++;
-            if((*vec)[i][1]>=(*mRadii)[mInd])
+            if((*vec)[i][mDataColumn]>=(*mRadii)[mInd])
             {
-                while((*vec)[i][1]>=(*mRadii)[mInd] && (int)mInd < mVecLength)
+                while((*vec)[i][mDataColumn]>=(*mRadii)[mInd] && (int)mInd < mVecLength)
                 {
                     mInd++;
                 }
@@ -433,9 +434,9 @@ void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<v
                     locCounts[mInd][0]++;
                 }
             }
-            else if((*vec)[i][1]<(*mRadii)[mInd-1])
+            else if((*vec)[i][mDataColumn]<(*mRadii)[mInd-1])
             {
-                while((*vec)[i][1]<(*mRadii)[mInd-1] && mInd > 0)
+                while((*vec)[i][mDataColumn]<(*mRadii)[mInd-1] && mInd > 0)
                 {
                     mInd--;
                 }
@@ -470,10 +471,10 @@ void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<v
         }
         else
         {
-            findStart2(started,(*vec)[i][1]);
+            findStart2(started,(*vec)[i][mDataColumn]);
             if (started == true)
             {
-                if((*vec)[i][1]>(*vec)[i-1][1])
+                if((*vec)[i][1]>(*vec)[i-1][mDataColumn])
                 {
                     lowstart = true;
                 }
@@ -501,9 +502,9 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
         }
         if(started == true)
         {
-            if((*vec)[i][1]>(*mRadii)[mInd+1])
+            if((*vec)[i][mDataColumn]>(*mRadii)[mInd+1])
             {
-                while((*vec)[i][1]>(*mRadii)[mInd+1] && (int)mInd < mVecLength-2)
+                while((*vec)[i][mDataColumn]>(*mRadii)[mInd+1] && (int)mInd < mVecLength-2)
                 {
                     // RTT:
                     updateVectorsRTT(dmrt,counts,(*vec)[i][0]);
@@ -514,9 +515,9 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
                     started = false;
                 }
             }
-            else if((*vec)[i][1]<(*mRadii)[mInd])
+            else if((*vec)[i][mDataColumn]<(*mRadii)[mInd])
             {
-                while((*vec)[i][1]<(*mRadii)[mInd] && mInd > 0)
+                while((*vec)[i][mDataColumn]<(*mRadii)[mInd] && mInd > 0)
                 {
                     mInd--;
                     // RTT:
@@ -530,11 +531,33 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
         }
         else
         {
-            findStart(started,(*vec)[i][1]);
+            findStart(started,(*vec)[i][mDataColumn]);
         }
     }
 }
 
+
+void dmrtalg2::makeHist(vector<vector<double> > &counts, const vector<vector<double> > *vec)
+{
+    for(size_t i = 0; i<(*vec).size(); i++)
+    {
+        for(size_t j = 0; j<(*mRadii).size(); j++)
+        {
+            if((*vec)[i][mDataColumn]>(*mRadii)[j])
+            {
+                for(size_t k = j+1; k<(*mRadii).size(); k++)
+                {
+                    if((*vec)[i][mDataColumn]<(*mRadii)[k])
+                    {
+                        counts[k-1][1]=counts[k-1][1]+1;
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+    }
+}
 
 //// COMMITOR CALCULATION FUNCTION (NOT FINISHED):
 
@@ -611,9 +634,9 @@ void dmrtalg2::getFPTfrom2DVectorCross(vector<vector<int> > &counts,const vector
         }
         if(started == true)
         {
-            if((*vec)[i][1]>(*mRadii)[mInd+1])
+            if((*vec)[i][mDataColumn]>(*mRadii)[mInd+1])
             {
-                while((*vec)[i][1]>(*mRadii)[mInd+1] && (int)mInd < mVecLength-1)
+                while((*vec)[i][mDataColumn]>(*mRadii)[mInd+1] && (int)mInd < mVecLength-1)
                 {
                     //FPT:
                     //double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][1],(*vec)[i][1]);
@@ -626,9 +649,9 @@ void dmrtalg2::getFPTfrom2DVectorCross(vector<vector<int> > &counts,const vector
                     started = false;
                 }
             }
-            else if((*vec)[i][1]<(*mRadii)[mInd])
+            else if((*vec)[i][mDataColumn]<(*mRadii)[mInd])
             {
-                while((*vec)[i][1]<(*mRadii)[mInd] && mInd > 0)
+                while((*vec)[i][mDataColumn]<(*mRadii)[mInd] && mInd > 0)
                 {
                     mInd--;
                     //FPT:
@@ -644,7 +667,7 @@ void dmrtalg2::getFPTfrom2DVectorCross(vector<vector<int> > &counts,const vector
         }
         else
         {
-            findStart(started,(*vec)[i][1]);
+            findStart(started,(*vec)[i][mDataColumn]);
         }
     }
 }
