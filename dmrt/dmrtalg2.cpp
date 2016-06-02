@@ -404,14 +404,14 @@ void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<v
         {
             //cout << mInd << endl;
             timer++;
-            if((*vec)[i][mDataColumn]>=(*mRadii)[mInd])
+            if((*vec)[i][mDataColumn]>=(*mRadii)[mInd+1])
             {
-                while((*vec)[i][mDataColumn]>=(*mRadii)[mInd] && (int)mInd < mVecLength)
+                while((*vec)[i][mDataColumn]>=(*mRadii)[mInd+1] && (int)mInd < mVecLength-1)
                 {
                     mInd++;
                 }
 
-                if (mInd == mVecLength)
+                if (mInd == mVecLength-1)
                 {
                     if(lowstart == true)
                     {
@@ -434,9 +434,9 @@ void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<v
                     locCounts[mInd][0]++;
                 }
             }
-            else if((*vec)[i][mDataColumn]<(*mRadii)[mInd-1])
+            else if((*vec)[i][mDataColumn]<(*mRadii)[mInd])
             {
-                while((*vec)[i][mDataColumn]<(*mRadii)[mInd-1] && mInd > 0)
+                while((*vec)[i][mDataColumn]<(*mRadii)[mInd] && mInd > 0)
                 {
                     mInd--;
                 }
@@ -471,7 +471,7 @@ void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<v
         }
         else
         {
-            findStart2(started,(*vec)[i][mDataColumn]);
+            findStart(started,(*vec)[i][mDataColumn]);
             if (started == true)
             {
                 if((*vec)[i][1]>(*vec)[i-1][mDataColumn])
@@ -504,13 +504,13 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
         {
             if((*vec)[i][mDataColumn]>(*mRadii)[mInd+1])
             {
-                while((*vec)[i][mDataColumn]>(*mRadii)[mInd+1] && (int)mInd < mVecLength-2)
+                while((*vec)[i][mDataColumn]>(*mRadii)[mInd+1] && (int)mInd < mVecLength-1)
                 {
                     // RTT:
                     updateVectorsRTT(dmrt,counts,(*vec)[i][0]);
                     mInd++;
                 }
-                if (mInd == mVecLength-2)
+                if (mInd == mVecLength-1)
                 {
                     started = false;
                 }

@@ -47,9 +47,11 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
 
     dmrtReader reader = dmrtReader(&myfile,this->mVerb);
     dmrtalg2 eval = dmrtalg2(this->mMode,this->mVerb,end,start,interval, dataColumn);
-    int vecLength = eval.getVecLength()-1;
-    (*finalDmrts) = vector< vector<double> >(vecLength+2,vector<double>(vecLength+1,0.0));
-    (*finalCounts) = vector< vector<int> >(vecLength+1,vector<int>(vecLength+1,0));
+    int vecLength = eval.getVecLength();
+    //(*finalDmrts) = vector< vector<double> >(vecLength+2,vector<double>(vecLength+1,0.0));
+    //(*finalCounts) = vector< vector<int> >(vecLength+1,vector<int>(vecLength+1,0));
+    (*finalDmrts) = vector< vector<double> >(vecLength+1,vector<double>(vecLength,0.0));
+    (*finalCounts) = vector< vector<int> >(vecLength,vector<int>(vecLength,0));
 
     bool success = true;
     int part = 0;
@@ -104,7 +106,12 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
     cout << "run complete!"<< endl;
     vector<double> radii = eval.getRadii();
 
+    for (int i=0;i<vecLength;i++)
+    {
+        (*finalDmrts)[vecLength+1][i]=radii[i];
+    }
 
+    /*
     if ((strncmp(this->mMode+4,"bins",4)==0) || (strncmp(this->mMode+2,"bins",4)==0))
     {
         for (int i=0;i<vecLength;i++)
@@ -120,7 +127,7 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
         }
     }
     (*finalDmrts)[vecLength+1][vecLength]=(*finalDmrts)[vecLength+1][vecLength-1]+((*finalDmrts)[vecLength+1][2]-(*finalDmrts)[vecLength+1][1]);
-
+    */
 
     if(this->mVerb){cout << "Finished calculation!" << endl;}
     if ((*finalDmrts).size()== 0)
@@ -151,7 +158,7 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
 void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, const vector< vector<double> >* vec, const double start, const double interval, const double end, const int dataColumn)
 {
     dmrtalg2 eval = dmrtalg2(this->mMode,this->mVerb,end,start,interval, dataColumn);
-    int vecLength = eval.getVecLength()-1;
+    int vecLength = eval.getVecLength();
     //(*finalDmrts) = vector< vector<double> >(vecLength+2,vector<double>(vecLength+1,0.0));
     //(*finalCounts) = vector< vector<int> >(vecLength+1,vector<int>(vecLength+1,0));
     (*finalDmrts) = vector< vector<double> >(vecLength+1,vector<double>(vecLength,0.0));

@@ -11,6 +11,9 @@ public:
     dmrtalg2();
     dmrtalg2(const char *mode, bool verb, const double escapeD, const double minD, const double dR, const int dataColumn = 1);
 
+    //Current implementation is purely based on binning as setup in the member function findstart
+    //
+
     //Helper functions:
 
     void getRadiiVec(vector<double> *dmrt, const double escapeD, const double minD, const double dR);
