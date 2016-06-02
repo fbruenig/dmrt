@@ -48,10 +48,23 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
     dmrtReader reader = dmrtReader(&myfile,this->mVerb);
     dmrtalg2 eval = dmrtalg2(this->mMode,this->mVerb,end,start,interval, dataColumn);
     int vecLength = eval.getVecLength();
+
+    // The final vectors get an extra row to save the the radii in, in BINS mode the last column will be empty
+    // according to common histogramn convention, size(bins)=size(hist)+1
+
     //(*finalDmrts) = vector< vector<double> >(vecLength+2,vector<double>(vecLength+1,0.0));
     //(*finalCounts) = vector< vector<int> >(vecLength+1,vector<int>(vecLength+1,0));
     (*finalDmrts) = vector< vector<double> >(vecLength+1,vector<double>(vecLength,0.0));
     (*finalCounts) = vector< vector<int> >(vecLength,vector<int>(vecLength,0));
+
+    vector<double> radii = eval.getRadii();
+
+    for (int i=0;i<vecLength;i++)
+    {
+        (*finalDmrts)[vecLength+1][i]=radii[i];
+    }
+    (*finalDmrts)[vecLength+1][vecLength]=(*finalDmrts)[vecLength+1][vecLength-1]+((*finalDmrts)[vecLength+1][2]-(*finalDmrts)[vecLength+1][1]);
+
 
     bool success = true;
     int part = 0;
@@ -104,12 +117,7 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
         delete vec;
     }
     cout << "run complete!"<< endl;
-    vector<double> radii = eval.getRadii();
 
-    for (int i=0;i<vecLength;i++)
-    {
-        (*finalDmrts)[vecLength+1][i]=radii[i];
-    }
 
     /*
     if ((strncmp(this->mMode+4,"bins",4)==0) || (strncmp(this->mMode+2,"bins",4)==0))
@@ -159,10 +167,22 @@ void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<i
 {
     dmrtalg2 eval = dmrtalg2(this->mMode,this->mVerb,end,start,interval, dataColumn);
     int vecLength = eval.getVecLength();
+
+    // The final vectors get an extra row to save the the radii in, in BINS mode the last column will be empty
+    // according to common histogramn convention, size(bins)=size(hist)+1
+
     //(*finalDmrts) = vector< vector<double> >(vecLength+2,vector<double>(vecLength+1,0.0));
     //(*finalCounts) = vector< vector<int> >(vecLength+1,vector<int>(vecLength+1,0));
     (*finalDmrts) = vector< vector<double> >(vecLength+1,vector<double>(vecLength,0.0));
     (*finalCounts) = vector< vector<int> >(vecLength,vector<int>(vecLength,0));
+
+    vector<double> radii = eval.getRadii();
+
+    for (int i=0;i<vecLength;i++)
+    {
+        (*finalDmrts)[vecLength+1][i]=radii[i];
+    }
+    (*finalDmrts)[vecLength+1][vecLength]=(*finalDmrts)[vecLength+1][vecLength-1]+((*finalDmrts)[vecLength+1][2]-(*finalDmrts)[vecLength+1][1]);
 
 
     bool success = true;
@@ -234,17 +254,6 @@ void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<i
             }
         }
     }
-
-    if(mVerb){cout << mMode <<" analysis complete!"<< endl;}
-
-    vector<double> radii = eval.getRadii();
-
-    for (int i=0;i<vecLength;i++)
-    {
-        (*finalDmrts)[vecLength][i]=radii[i];
-    }
-    (*finalDmrts)[vecLength][vecLength-1]=(*finalDmrts)[vecLength][vecLength-2]+((*finalDmrts)[vecLength][2]-(*finalDmrts)[vecLength][1]);
-
 
     if(this->mVerb){cout << "Finished calculation!" << endl;}
     if ((*finalDmrts).size()== 0)

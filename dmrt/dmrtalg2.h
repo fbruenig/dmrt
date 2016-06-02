@@ -11,8 +11,13 @@ public:
     dmrtalg2();
     dmrtalg2(const char *mode, bool verb, const double escapeD, const double minD, const double dR, const int dataColumn = 1);
 
-    //Current implementation is purely based on binning as setup in the member function findstart
+    //Current implementation is purely based on binning as setup in the member function findstart2
+    //Accordingly for radii r[i],r[i+1],r[i+2]... updates are done a follows:
     //
+    //CROSS: when crossing r[i] from low to high updates are performed at i
+    //BINS:  when crossing r[i] from low to high updates are performed at i+1
+
+
 
     //Helper functions:
 
@@ -20,7 +25,7 @@ public:
     void initializeLocalVectors();
     int getVecLength(){return mVecLength;}
     vector<double> getRadii(){return (*mRadii);}
-    void findStart(bool &started, const double d);
+    //void findStart(bool &started, const double d);
     void findStart2(bool &started, const double d);
     double interpolate(const double t1, const double t2, const double r1, const double r2);
     void makeHist(vector<vector<double> > &counts, const vector<vector<double> > *vec);
