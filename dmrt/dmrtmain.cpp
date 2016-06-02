@@ -63,8 +63,6 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
     {
         (*finalDmrts)[vecLength+1][i]=radii[i];
     }
-    (*finalDmrts)[vecLength+1][vecLength]=(*finalDmrts)[vecLength+1][vecLength-1]+((*finalDmrts)[vecLength+1][2]-(*finalDmrts)[vecLength+1][1]);
-
 
     bool success = true;
     int part = 0;
@@ -180,10 +178,8 @@ void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<i
 
     for (int i=0;i<vecLength;i++)
     {
-        (*finalDmrts)[vecLength+1][i]=radii[i];
+        (*finalDmrts)[vecLength][i]=radii[i];
     }
-    (*finalDmrts)[vecLength+1][vecLength]=(*finalDmrts)[vecLength+1][vecLength-1]+((*finalDmrts)[vecLength+1][2]-(*finalDmrts)[vecLength+1][1]);
-
 
     bool success = true;
     int part = 0;
