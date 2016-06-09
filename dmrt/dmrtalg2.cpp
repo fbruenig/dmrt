@@ -229,7 +229,7 @@ void dmrtalg2::getMFPTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vec
         {
             if((*vec)[i][mDataColumn]>(*mRadii)[mInd])
             {
-                while((*vec)[i][mDataColumn]>(*mRadii)[mInd] && (int)mInd < mVecLength)
+                while((*vec)[i][mDataColumn]>(*mRadii)[mInd] && (int)mInd < mVecLength-1)
                 {
                     for (int j=0;j< int(mInd);j++)
                     {
@@ -243,7 +243,7 @@ void dmrtalg2::getMFPTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vec
                     // update forward dmrts for given Qf at mInd
                 //    updateDMRTatQf(j,dmrt,counts,(*vec)[i][0]);
                 //}
-                if (mInd == mVecLength)
+                if (mInd == mVecLength-1)
                 {
                     started = false;
                 }
