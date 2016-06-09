@@ -46,6 +46,54 @@ vector<vector<double> > *dmrtReader::read2Dvector()
     return this->mData;
 }
 
+vector<vector<double> > *dmrtReader::read2Dvector(const vector<int> columnsOfInterest)
+{
+    string line = string("");
+    mData = new vector< vector<double>  >;
+    int nLines = 0;
+    int numOfColumns = columnsOfInterest.size();
+
+    // Init Loop (one line)
+    getline(*mFilehandle,line);
+    int numOfColsInFile=0;
+    stringstream line_ss(line);
+    string column = "";
+    while(getline(line_ss,column,'\t'))
+    {
+        numOfColsInFile++;
+    }
+    vector<bool> use = vector<bool>(numOfColsInFile,0);
+    for(int i =0;i<columnsOfInterest.size();i++)
+    {
+        use[i]=true;
+    }
+
+    //Main Loop
+    while(getline(*mFilehandle,line))
+    {
+
+        stringstream line_ss(line);
+        string column = "";
+        vector<double> col = vector<double>(numOfColumns);
+        unsigned int index = 0;
+        unsigned int colInd = 0;
+        while(getline(line_ss,column,'\t'))
+        {
+            if(use[index]==true)
+            {
+                col[colInd]=strtof(column.c_str(),NULL) ;
+                colInd++;
+            }
+            index++;
+        }
+        mData->push_back(col);
+        nLines++;
+    }
+
+    if(this->mVerb){cout <<  "read " << nLines << " lines" << endl;}
+    return this->mData;
+}
+
 vector<vector<double> > *dmrtReader::read2DvectorSpace()
 {
     string line = string("");
@@ -118,6 +166,54 @@ vector<vector<double> > *dmrtReader::read2DvectorSpace(const double rmin, const 
             if(this->mVerb == 1){cout <<"Could not read line " << nLines << endl;}
         }
     }
+    if(this->mVerb){cout <<  "read " << nLines << " lines" << endl;}
+    return this->mData;
+}
+
+vector<vector<double> > *dmrtReader::read2DvectorSpace(const vector<int> columnsOfInterest)
+{
+    string line = string("");
+    mData = new vector< vector<double>  >;
+    int nLines = 0;
+    int numOfColumns = columnsOfInterest.size();
+
+    // Init Loop (one line)
+    getline(*mFilehandle,line);
+    int numOfColsInFile=0;
+    stringstream line_ss(line);
+    string column = "";
+    while(getline(line_ss,column,'\ '))
+    {
+        numOfColsInFile++;
+    }
+    vector<bool> use = vector<bool>(numOfColsInFile,0);
+    for(int i =0;i<columnsOfInterest.size();i++)
+    {
+        use[i]=true;
+    }
+
+    //Main Loop
+    while(getline(*mFilehandle,line))
+    {
+
+        stringstream line_ss(line);
+        string column = "";
+        vector<double> col = vector<double>(numOfColumns);
+        unsigned int index = 0;
+        unsigned int colInd = 0;
+        while(getline(line_ss,column,'\ '))
+        {
+            if(use[index]==true)
+            {
+                col[colInd]=strtof(column.c_str(),NULL) ;
+                colInd++;
+            }
+            index++;
+        }
+        mData->push_back(col);
+        nLines++;
+    }
+
     if(this->mVerb){cout <<  "read " << nLines << " lines" << endl;}
     return this->mData;
 }

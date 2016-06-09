@@ -23,8 +23,6 @@ public:
 
     dmrtReader(ifstream *handle, bool verb);
 
-    vector< vector<double> >* read2Dvector();
-
     void print2DVectorToXVG(vector<vector<double> > *vec, ofstream *handle);
 
     void display(int i, int j);
@@ -33,6 +31,17 @@ public:
 
     void display(vector<double> *vector, size_t i);
 
+    void displayLines(vector<vector<double> > *vec, int column, int lines);
+
+    vector<vector<double> >* read2Dvector();
+    vector<vector<double> > *read2Dvector(const vector<int> columnsOfInterest);
+
+    vector<vector<double> > *read2DvectorSpace(const vector<int> columnsOfInterest);
+
+    vector<vector<double> > *read2DvectorSpace();
+    vector<vector<double> > *read2DvectorSpace(const double rmin, const double rmax);
+
+    vector<vector<double> > *read2DvectorSpace4gb(const double rmin, const double rmax);
 
 
 // members:
@@ -43,11 +52,6 @@ public:
     ifstream *mFilehandle;
     int mFPosition;
 
-    void displayLines(vector<vector<double> > *vec, int column, int lines);
-    vector<vector<double> > *read2DvectorSpace();
-    vector<vector<double> > *read2DvectorSpace(const double rmin, const double rmax);
-
-    vector<vector<double> > *read2DvectorSpace4gb(const double rmin, const double rmax);
 private:
 
     bool mVerb;
