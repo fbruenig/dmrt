@@ -115,6 +115,31 @@ void dmrtalg2::updateQfatQ(const int i,const double time)
     }
 }
 
+void dmrtalg2::updateDMRTatQfReturn(const int i, vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time)
+{
+    if (locCounts[mInd][i]!=0)
+    {
+        double relFin   = time-locStart[mInd][i];
+        dmrt[mInd][i]  += locDmrt[mInd][i] + (relFin*locCounts[mInd][i]);
+        counts[mInd][i] += locCounts[mInd][i];
+        locCounts[mInd][i]=0;
+    }
+}
+
+void dmrtalg2::updateQfatQReturn(const int i,const double time)
+{
+    if (locCounts[i][mInd]==0)
+    {
+        locStart[i][mInd]=time;
+        locDmrt[i][mInd]  =0.0;
+        locCounts[i][mInd] = 1;
+    }
+    else
+    {
+        locDmrt[i][mInd]+=  locStart[i][mInd] -time;
+        locCounts[i][mInd]++;
+    }
+}
 
 void dmrtalg2::updateCMatrixTFPT(vector<vector<int> > &counts)
 {
@@ -136,12 +161,12 @@ void dmrtalg2::updateCMatrixTFPT(vector<vector<double> > &counts)
 
 void dmrtalg2::updateVectorsMFPT(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time)
 {
-    for (int i=mInd+1;i< mVecLength;i++)
+    for (int i=mInd;i< mVecLength;i++)
     {
         // update forward Qfs for given Q at mInd
         updateQfatQ(i,time);
     }
-    for (int i=0;i< int(mInd);i++)
+    for (int i=0;i< int(mInd-1);i++)
     {
         // update forward dmrts for given Qf at mInd
         updateDMRTatQf(i,dmrt,counts,time);

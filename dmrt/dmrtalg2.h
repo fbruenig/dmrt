@@ -67,6 +67,8 @@ public:
     void updateCountsatQReturn(const int i);
     void updateCountsatQfReturn(const int i, vector<vector<int> > &counts);
 
+    void updateDMRTatQfReturn(const int i, vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time);
+    void updateQfatQReturn(const int i, const double time);
 private:
 
     double mEpsilon = 0.00000001;
