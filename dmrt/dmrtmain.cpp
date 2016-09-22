@@ -108,7 +108,7 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
             }
             else if (strncmp(this->mMode+4,"cross",5)==0)
             {
-                cout << "Initial config: "<< vecLength << endl;
+                //cout << "Initial config: "<< vecLength << endl;
                 eval.getFPTfrom2DVectorCross((*finalCounts),vec);
             }
         }
