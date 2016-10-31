@@ -33,7 +33,7 @@ double dmrtalg2::interpolate(const double t1, const double t2, const double r1, 
     const double dt = t2-t1;
     const double dr = r2-r1;
     //double tf = abs((*mRadii)[mInd]-r1)/abs(dr);
-    double tf = (*mRadii)[mInd]/dr;
+    double tf = ((*mRadii)[mInd]-r1)/dr;
     tf *= dt;
     tf +=t1;
     return tf;
