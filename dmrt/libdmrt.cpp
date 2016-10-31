@@ -33,8 +33,9 @@ static PyObject* py_dmrtMain(PyObject* self, PyObject* args)
 
         vector<vector<double> >* tes = new vector< vector<double> >;
         vector<vector<int> >* count = new vector< vector<int> >;
+        vector<vector<int> >* upts = new vector< vector<int> >;
         //prog.executeLongFile(tes,count,infile,outfile,start,interval,end);
-        prog.execute2(tes,count,infile,outfile,start,interval,end);
+        prog.execute2(tes,count,upts,infile,outfile,start,interval,end);
 
         PyObject * TwoDList =NULL;
         PyObject * TwoDListCounts =NULL;
@@ -115,14 +116,16 @@ static PyObject* py_dmrtMainInp(PyObject* self, PyObject* args)
 
         vector<vector<double> >* tes = new vector< vector<double> >;
         vector<vector<int> >* count = new vector< vector<int> >;
+        vector<vector<int> >* upts = new vector< vector<int> >;
         //prog.executeLongFile(tes,count,infile,outfile,start,interval,end);
-        prog.executeFly(tes,count,&data,start,interval,end);
+        prog.executeFly(tes,count,upts,&data,start,interval,end);
 
         /* Clean up. */
         Py_DECREF(input);
 
         PyObject * TwoDList =NULL;
         PyObject * TwoDListCounts =NULL;
+        PyObject * TwoDListUpts =NULL;
 
         if (strncmp(mode,"rt",2)==0 || strncmp(mode+1,"ftp",3)==0)
         {
@@ -154,8 +157,20 @@ static PyObject* py_dmrtMainInp(PyObject* self, PyObject* args)
                 }
                 PyList_SetItem(TwoDListCounts,i,Py_BuildValue("O",PList4));
             }
+            TwoDListUpts = PyList_New(veclength);
+            for(size_t i = 0; i < veclength ; i++ )
+            {
+                PyObject * PList5 = NULL;
+                PList5 = PyList_New(veclength);
+                for(size_t j = 0; j < veclength ; j++ )
+                {
+                    PyList_SetItem(PList5,j, Py_BuildValue("i", (*upts)[i][j]));
+                    //cout << (*count)[i][j] << endl;
+                }
+                PyList_SetItem(TwoDListUpts,i,Py_BuildValue("O",PList5));
+            }
         }
-        return Py_BuildValue("OO",TwoDList,TwoDListCounts);
+        return Py_BuildValue("OOO",TwoDList,TwoDListCounts,TwoDListUpts);
 }
 
 

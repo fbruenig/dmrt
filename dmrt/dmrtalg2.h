@@ -38,15 +38,16 @@ public:
 
     void getMFPTfrom2DVectorCross(double &retMftp, int &retCounts, const vector<vector<double> > *vec, double absorbD, double escapeD, int direction);
 
-    void getMFPTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const vector<vector<double> > *vec);
-    void getMFPTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const vector<vector<double> > *vec);
-    void getRTTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const vector<vector<double> > *vec);
-    void getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const vector<vector<double> > *vec);
-    void updateVectorsMFPT(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time);
-    void updateVectorsRTT(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time);
+    void getMFPTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const vector<vector<double> > *vec);
+    void getMFPTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const vector<vector<double> > *vec);
+    void getRTTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const vector<vector<double> > *vec);
+    void getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const vector<vector<double> > *vec);
 
-    void updateVectorsMFPTCont(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time);
-    void updateDMRTatQf(const int i, vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time);
+    void updateVectorsMFPT(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time);
+    void updateVectorsRTT(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time);
+
+//    void updateVectorsMFPTCont(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time);
+    void updateDMRTatQf(const int i, vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time);
     void updateQfatQ(const int i, const double time);
 
 

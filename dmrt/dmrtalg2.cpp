@@ -1,6 +1,7 @@
 #include "dmrtalg2.h"
 #include <vector>
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 
@@ -31,6 +32,7 @@ double dmrtalg2::interpolate(const double t1, const double t2, const double r1, 
 {
     const double dt = t2-t1;
     const double dr = r2-r1;
+    //double tf = abs((*mRadii)[mInd]-r1)/abs(dr);
     double tf = (*mRadii)[mInd]/dr;
     tf *= dt;
     tf +=t1;
@@ -89,7 +91,7 @@ void dmrtalg2::findStart2(bool& started, const double d)
 
 
 
-void dmrtalg2::updateDMRTatQf(const int i, vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time)
+void dmrtalg2::updateDMRTatQf(const int i, vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time)
 {
     if (locCounts[i][mInd]!=0)
     {
@@ -97,6 +99,7 @@ void dmrtalg2::updateDMRTatQf(const int i, vector<vector<double> > &dmrt, vector
         dmrt[i][mInd]  += locDmrt[i][mInd] + (relFin*locCounts[i][mInd]);
         counts[i][mInd] += locCounts[i][mInd];
         locCounts[i][mInd]=0;
+        upts[i][mInd]++;
     }
 }
 
@@ -133,7 +136,7 @@ void dmrtalg2::updateCMatrixTFPT(vector<vector<double> > &counts)
 
 }
 
-void dmrtalg2::updateVectorsMFPT(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time)
+void dmrtalg2::updateVectorsMFPT(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time)
 {
     for (int i=mInd;i< mVecLength;i++)
     {
@@ -143,10 +146,11 @@ void dmrtalg2::updateVectorsMFPT(vector<vector<double> > &dmrt, vector<vector<in
     for (int i=0;i< int(mInd-1);i++)
     {
         // update forward dmrts for given Qf at mInd
-        updateDMRTatQf(i,dmrt,counts,time);
+        updateDMRTatQf(i,dmrt,counts ,upts,time);
     }
 }
 
+/*
 void dmrtalg2::updateVectorsMFPTCont(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time)
 {
     for (int i=mInd+1;i< mVecLength;i++)
@@ -177,28 +181,29 @@ void dmrtalg2::updateVectorsMFPTCont(vector<vector<double> > &dmrt, vector<vecto
         }
     }
 }
+*/
 
-void dmrtalg2::updateVectorsRTT(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time)
+void dmrtalg2::updateVectorsRTT(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time)
 {
     for (int i=mInd;i< mVecLength;i++)
     {
+
         // update forward Qfs for given Q at mInd
         updateQfatQ(i,time);
 
-
         // update return dmrts for given Qf at mInd
-        updateDMRTatQf(i,dmrt,counts,time);
+        updateDMRTatQf(i,dmrt,counts ,upts,time);
+
     }
     for (int i=0;i< int(mInd-1);i++)
     {
         // update forward dmrts for given Qf at mInd
-        updateDMRTatQf(i,dmrt,counts,time);
+        updateDMRTatQf(i,dmrt,counts ,upts,time);
 
         // update return Qfs for given Q at mInd
         updateQfatQ(i,time);
     }
 }
-
 
 void dmrtalg2::getRadiiVec(vector<double> *dmrt, const double escapeD, const double minD, const double dR)
 {
@@ -214,7 +219,7 @@ void dmrtalg2::getRadiiVec(vector<double> *dmrt, const double escapeD, const dou
     }
 }
 
-void dmrtalg2::getMFPTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vector<int> > &counts,const vector<vector<double> > *vec)
+void dmrtalg2::getMFPTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const vector<vector<double> > *vec)
 {
     bool started = false;
     for(size_t i = 1; i<(*vec).size(); i++)
@@ -233,7 +238,7 @@ void dmrtalg2::getMFPTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vec
                     for (int j=0;j< int(mInd);j++)
                     {
                         // update forward dmrts for given Qf at mInd
-                        updateDMRTatQf(j,dmrt,counts,(*vec)[i][0]);
+                        updateDMRTatQf(j,dmrt,counts ,upts,(*vec)[i][0]);
                     }
                     mInd++;
                 }
@@ -258,7 +263,7 @@ void dmrtalg2::getMFPTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vec
                     started = false;
                 }
             }
-            updateVectorsMFPT(dmrt,counts,(*vec)[i][0]);
+            updateVectorsMFPT(dmrt,counts ,upts,(*vec)[i][0]);
         }
         else
         {
@@ -268,7 +273,7 @@ void dmrtalg2::getMFPTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vec
     }
 }
 
-void dmrtalg2::getRTTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vector<int> > &counts,const vector<vector<double> > *vec)
+void dmrtalg2::getRTTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const vector<vector<double> > *vec)
 {
     bool started = false;
     for(size_t i = 1; i<(*vec).size(); i++)
@@ -287,7 +292,7 @@ void dmrtalg2::getRTTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vect
                     for (int j=0;j< int(mInd);j++)
                     {
                         // update forward dmrts for given Qf at mInd
-                        updateDMRTatQf(j,dmrt,counts,(*vec)[i][0]);
+                        updateDMRTatQf(j,dmrt,counts ,upts,(*vec)[i][0]);
                     }
                     mInd++;
                 }
@@ -304,7 +309,7 @@ void dmrtalg2::getRTTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vect
                     for (int j=0;j< int(mInd);j++)
                     {
                         // update retrun dmrts for given Qf at mInd
-                        updateDMRTatQf(j,dmrt,counts,(*vec)[i][0]);
+                        updateDMRTatQf(j,dmrt,counts ,upts,(*vec)[i][0]);
                     }
                 }
                 if (mInd == 0)
@@ -312,7 +317,7 @@ void dmrtalg2::getRTTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vect
                     started = false;
                 }
             }
-            updateVectorsRTT(dmrt,counts,(*vec)[i][0]);
+            updateVectorsRTT(dmrt,counts ,upts,(*vec)[i][0]);
         }
         else
         {
@@ -321,58 +326,7 @@ void dmrtalg2::getRTTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vect
     }
 }
 
-void dmrtalg2::getMFPTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vector<int> > &counts,const vector<vector<double> > *vec)
-{
-    bool started = false;
-    for(size_t i = 1; i<(*vec).size(); i++)
-    {
-        if((*vec)[i][0]<(*vec)[i-1][0])
-        {
-            initializeLocalVectors();
-            started = false;
-        }
-        if(started == true)
-        {
-            if((*vec)[i][mDataColumn]>(*mRadii)[mInd])
-            {
-                while((*vec)[i][mDataColumn]>(*mRadii)[mInd] && (int)mInd < mVecLength)
-                {
-                    //MFPT:
-                    double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
-                    updateVectorsMFPT(dmrt,counts,interTime);
-                    //updateVectorsMFPT(dmrt,counts,(*vec)[i][0]);
-                    mInd++;
-                }
-                if (mInd == mVecLength)
-                {
-                    started = false;
-                }
-            }
-            else if((*vec)[i][mDataColumn]<(*mRadii)[mInd-1])
-            {
-                while((*vec)[i][mDataColumn]<(*mRadii)[mInd-1] && mInd > 0)
-                {
-                    mInd--;
-                    //MFPT:
-                    double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
-                    updateVectorsMFPT(dmrt,counts,interTime);
-                    //updateVectorsMFPT(dmrt,counts,(*vec)[i][0]);
-                }
-                if (mInd == 0)
-                {
-                    started = false;
-                }
-            }
-        }
-        else
-        {
-            findStart2(started,(*vec)[i][mDataColumn]);
-        }
-    }
-}
-
-
-void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<vector<int> > &counts, const vector<vector<double> > *vec)
+void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<vector<int> > &counts,const vector<vector<double> > *vec)
 {
     bool started = false;
     int timer = 0;
@@ -491,7 +445,57 @@ void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<v
     cout << "Crossing vs Back:" << forcross << " "<< backcross << " " << back << endl;
 }
 
-void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vector<int> > &counts,const vector<vector<double> > *vec)
+void dmrtalg2::getMFPTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const vector<vector<double> > *vec)
+{
+    bool started = false;
+    for(size_t i = 1; i<(*vec).size(); i++)
+    {
+        if((*vec)[i][0]<(*vec)[i-1][0])
+        {
+            initializeLocalVectors();
+            started = false;
+        }
+        if(started == true)
+        {
+            if((*vec)[i][mDataColumn]>(*mRadii)[mInd])
+            {
+                while((*vec)[i][mDataColumn]>(*mRadii)[mInd] && (int)mInd < mVecLength)
+                {
+                    //MFPT:
+                    double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
+                    updateVectorsMFPT(dmrt,counts ,upts,interTime);
+                    //updateVectorsMFPT(dmrt,counts,(*vec)[i][0]);
+                    mInd++;
+                }
+                if (mInd == mVecLength)
+                {
+                    started = false;
+                }
+            }
+            else if((*vec)[i][mDataColumn]<(*mRadii)[mInd-1])
+            {
+                while((*vec)[i][mDataColumn]<(*mRadii)[mInd-1] && mInd > 0)
+                {
+                    mInd--;
+                    //MFPT:
+                    double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
+                    updateVectorsMFPT(dmrt,counts ,upts,interTime);
+                    //updateVectorsMFPT(dmrt,counts,(*vec)[i][0]);
+                }
+                if (mInd == 0)
+                {
+                    started = false;
+                }
+            }
+        }
+        else
+        {
+            findStart2(started,(*vec)[i][mDataColumn]);
+        }
+    }
+}
+
+void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const vector<vector<double> > *vec)
 {
     bool started = false;
     for(size_t i = 1; i<(*vec).size(); i++)
@@ -508,7 +512,9 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
                 while((*vec)[i][mDataColumn]>(*mRadii)[mInd] && (int)mInd < mVecLength)
                 {
                     // RTT:
-                    updateVectorsRTT(dmrt,counts,(*vec)[i][0]);
+                    double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
+                    updateVectorsRTT(dmrt,counts ,upts,interTime);
+                    //updateVectorsRTT(dmrt,counts ,upts,(*vec)[i][0]);
                     mInd++;
                 }
                 if (mInd == mVecLength)
@@ -522,7 +528,9 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
                 {
                     mInd--;
                     // RTT:
-                    updateVectorsRTT(dmrt,counts,(*vec)[i][0]);
+                    double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
+                    updateVectorsRTT(dmrt,counts ,upts,interTime);
+                    //updateVectorsRTT(dmrt,counts ,upts,(*vec)[i][0]);
                 }
                 if (mInd == 0)
                 {
@@ -536,7 +544,6 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
         }
     }
 }
-
 
 void dmrtalg2::makeHist(vector<vector<double> > &counts, const vector<vector<double> > *vec)
 {
@@ -620,8 +627,6 @@ void dmrtalg2::updateVectorsFPT(vector<vector<int> > &counts)
         locCounts = vector<vector<int> >(mVecLength,vector<int>(mVecLength,0));
     }
 }
-
-
 
 void dmrtalg2::getFPTfrom2DVectorCross(vector<vector<int> > &counts,const vector<vector<double> > *vec)
 {

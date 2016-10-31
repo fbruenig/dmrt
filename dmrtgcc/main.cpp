@@ -3,7 +3,7 @@
 #include <string.h>
 using namespace std;
 
-int main(int argc, char** argv)
+int main(int argc, const char** argv)
 {
 
     if(argc>6)
@@ -15,8 +15,8 @@ int main(int argc, char** argv)
     }
     else
     {
-        cout << "Entering" << " single" << " mode" << endl;
-        dmrtMain prog = dmrtMain();
+        cout << "Entering" << "rtcross" << " mode" << endl;
+        dmrtMain prog = dmrtMain("rtcross",1);
         prog.execute2(argc,argv);
     }
 

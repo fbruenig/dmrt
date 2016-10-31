@@ -17,7 +17,7 @@ dmrtMain::dmrtMain(const char *mode, bool verb)
     this->mMode=mode;
 }
 
-void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, const char *input, const char *output, const double start, const double interval, const double end, const int dataColumn)
+void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts, const char *input, const char *output, const double start, const double interval, const double end, const int dataColumn)
 {
 
     if(this->mVerb){ cout << "Starting in" << input << endl;}
@@ -56,12 +56,13 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
     //(*finalCounts) = vector< vector<int> >(vecLength+1,vector<int>(vecLength+1,0));
     (*finalDmrts) = vector< vector<double> >(vecLength+1,vector<double>(vecLength,0.0));
     (*finalCounts) = vector< vector<int> >(vecLength,vector<int>(vecLength,0));
+    (*finalUpts) = vector< vector<int> >(vecLength,vector<int>(vecLength,0));
 
     vector<double> radii = eval.getRadii();
 
     for (int i=0;i<vecLength;i++)
     {
-        (*finalDmrts)[vecLength+1][i]=radii[i];
+        (*finalDmrts)[vecLength][i]=radii[i];
     }
 
     bool success = true;
@@ -82,22 +83,22 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
         {
             if (strncmp(this->mMode+2,"bins",4)==0)
             {
-                eval.getRTTfrom2DVectorBins((*finalDmrts),(*finalCounts),vec);
+                eval.getRTTfrom2DVectorBins((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
             else if (strncmp(this->mMode+2,"cross",5)==0)
             {
-                eval.getRTTfrom2DVectorCross((*finalDmrts),(*finalCounts),vec);
+                eval.getRTTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
         }
         else if (strncmp(this->mMode,"mftp",4)==0)
         {
             if (strncmp(this->mMode+4,"bins",4)==0)
             {
-                eval.getMFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),vec);
+                eval.getMFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
             else if (strncmp(this->mMode+4,"cross",5)==0)
             {
-                eval.getMFPTfrom2DVectorCross((*finalDmrts),(*finalCounts),vec);
+                eval.getMFPTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
         }
         else if (strncmp(this->mMode,"cftp",4)==0)
@@ -161,7 +162,7 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
     myfile.close();
 }
 
-void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, const vector< vector<double> >* vec, const double start, const double interval, const double end, const int dataColumn)
+void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts,const vector< vector<double> >* vec, const double start, const double interval, const double end, const int dataColumn)
 {
     dmrtalg2 eval = dmrtalg2(this->mMode,this->mVerb,end,start,interval, dataColumn);
     int vecLength = eval.getVecLength();
@@ -173,6 +174,7 @@ void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<i
     //(*finalCounts) = vector< vector<int> >(vecLength+1,vector<int>(vecLength+1,0));
     (*finalDmrts) = vector< vector<double> >(vecLength+1,vector<double>(vecLength,0.0));
     (*finalCounts) = vector< vector<int> >(vecLength,vector<int>(vecLength,0));
+    (*finalUpts) = vector< vector<int> >(vecLength,vector<int>(vecLength,0));
 
     vector<double> radii = eval.getRadii();
 
@@ -200,22 +202,22 @@ void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<i
         {
             if (strncmp(this->mMode+2,"bins",4)==0)
             {
-                eval.getRTTfrom2DVectorBins((*finalDmrts),(*finalCounts),vec);
+                eval.getRTTfrom2DVectorBins((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
             else if (strncmp(this->mMode+2,"cross",5)==0)
             {
-                eval.getRTTfrom2DVectorCross((*finalDmrts),(*finalCounts),vec);
+                eval.getRTTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
         }
         else if (strncmp(this->mMode,"mftp",4)==0)
         {
             if (strncmp(this->mMode+4,"bins",4)==0)
             {
-                eval.getMFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),vec);
+                eval.getMFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
             else if (strncmp(this->mMode+4,"cross",5)==0)
             {
-                eval.getMFPTfrom2DVectorCross((*finalDmrts),(*finalCounts),vec);
+                eval.getMFPTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
         }
         else if (strncmp(this->mMode,"cftp",4)==0)
@@ -283,7 +285,8 @@ int dmrtMain::execute2(int argc, const char *argv[])
     }
     vector<vector<double> >* tes = new vector< vector<double> >;
     vector<vector<int> >* count = new vector< vector<int> >;
-    execute2(tes,count,argv[1],argv[2], atof(argv[3]), atof(argv[4]), atof(argv[5]));
+    vector<vector<int> >* upts = new vector< vector<int> >;
+    execute2(tes,count,upts,argv[1],argv[2], atof(argv[3]), atof(argv[4]), atof(argv[5]));
     dmrtReader reader = dmrtReader();
     return 0;
 }
