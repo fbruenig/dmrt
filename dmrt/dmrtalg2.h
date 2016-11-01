@@ -21,10 +21,10 @@ public:
 
     //Helper functions:
 
-    void getRadiiVec(vector<double> *dmrt, const double escapeD, const double minD, const double dR);
+    void getRadiiVec(vector<double> &dmrt, const double escapeD, const double minD, const double dR);
     void initializeLocalVectors();
     int getVecLength(){return mVecLength;}
-    vector<double> getRadii(){return (*mRadii);}
+    vector<double> getRadii(){return mRadii;}
     //void findStart(bool &started, const double d);
     void findStart2(bool &started, const double d);
     double interpolate(const double t1, const double t2, const double r1, const double r2);
@@ -76,7 +76,7 @@ private:
     double mDq;
     int mVecLength ;
     size_t mInd;
-    vector<double> *mRadii;
+    vector<double> mRadii;
     vector<vector<double> > locDmrt;
     vector<vector<double> > locStart;
     vector<vector<int> > locCounts;

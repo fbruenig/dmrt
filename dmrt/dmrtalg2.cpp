@@ -3,6 +3,22 @@
 #include <iostream>
 #include <cmath>
 
+
+/*
+In MFPT mode the matrices contain q_i in the first index and q_f in the second index
+
+
+Recent changes:
+*changed mRadiiVec type
+*changed interpolation (Test it)
+*changed updateMethod from  (start-time) to (time-start)
+*problem remains: update in first neighbour index not performed due to safe recrossing implementation
+
+
+*/
+
+
+
 using namespace std;
 
 dmrtalg2::dmrtalg2()
@@ -13,11 +29,11 @@ dmrtalg2::dmrtalg2(const char *mode, bool verb, const double escapeD, const doub
 {
     mMode=mode;
     mVerb=verb;
-    mRadii = new vector<double>;
+    mRadii = vector<double>(0.0);
     mInd = 0;
     mDataColumn = dataColumn;
     getRadiiVec(mRadii,escapeD,minD,dR);
-    mVecLength = mRadii->size();
+    mVecLength = mRadii.size();
     initializeLocalVectors();
 }
 
@@ -32,8 +48,8 @@ double dmrtalg2::interpolate(const double t1, const double t2, const double r1, 
 {
     const double dt = t2-t1;
     const double dr = r2-r1;
-    //double tf = abs((*mRadii)[mInd]-r1)/abs(dr);
-    double tf = ((*mRadii)[mInd]-r1)/dr;
+    //double tf = abs(mRadii[mInd]-r1)/abs(dr);
+    double tf = (mRadii[mInd]-r1)/dr;
     tf *= dt;
     tf +=t1;
     return tf;
@@ -42,21 +58,21 @@ double dmrtalg2::interpolate(const double t1, const double t2, const double r1, 
 /*
 void dmrtalg2::findStart(bool& started, const double d)
 {
-    if(d>=(*mRadii)[0] && d<(*mRadii)[mVecLength-1])
+    if(d>=mRadii[0] && d<mRadii[mVecLength-1])
     {
         started = true;
-        if(d>=(*mRadii)[0] &&d<(*mRadii)[1])
+        if(d>=mRadii[0] &&d<mRadii[1])
         {
             mInd = 0;
         }
-        else if(d>=(*mRadii)[mVecLength-2] &&d<(*mRadii)[mVecLength-1])
+        else if(d>=mRadii[mVecLength-2] &&d<mRadii[mVecLength-1])
         {
             mInd = mVecLength-2;
         }
         else
         {
             mInd = 0;
-            while(!(d>=(*mRadii)[mInd] && d<(*mRadii)[mInd+1]))
+            while(!(d>=mRadii[mInd] && d<mRadii[mInd+1]))
             {
                 mInd++;
             }
@@ -67,21 +83,21 @@ void dmrtalg2::findStart(bool& started, const double d)
 
 void dmrtalg2::findStart2(bool& started, const double d)
 {
-    if((d>=(*mRadii)[0]) && (d<(*mRadii)[mVecLength-1]))
+    if((d>=mRadii[0]) && (d<mRadii[mVecLength-1]))
     {
         started = true;
-        if(d>=(*mRadii)[0] &&d<(*mRadii)[1])
+        if(d>=mRadii[0] &&d<mRadii[1])
         {
             mInd = 1;
         }
-        else if(d>=(*mRadii)[mVecLength-2] &&d<(*mRadii)[mVecLength-1])
+        else if(d>=mRadii[mVecLength-2] &&d<mRadii[mVecLength-1])
         {
             mInd = mVecLength-1;
         }
         else
         {
             mInd = 1;
-            while(!(d>=(*mRadii)[mInd-1] && d<(*mRadii)[mInd]))
+            while(!(d>=mRadii[mInd-1] && d<mRadii[mInd]))
             {
                 mInd++;
             }
@@ -113,7 +129,7 @@ void dmrtalg2::updateQfatQ(const int i,const double time)
     }
     else
     {
-        locDmrt[mInd][i]+=  locStart[mInd][i] -time;
+        locDmrt[mInd][i]+=  time - locStart[mInd][i];
         locCounts[mInd][i]++;
     }
 }
@@ -205,7 +221,7 @@ void dmrtalg2::updateVectorsRTT(vector<vector<double> > &dmrt, vector<vector<int
     }
 }
 
-void dmrtalg2::getRadiiVec(vector<double> *dmrt, const double escapeD, const double minD, const double dR)
+void dmrtalg2::getRadiiVec(vector<double> &dmrt, const double escapeD, const double minD, const double dR)
 {
     size_t vecLength;
     if (escapeD>minD)
@@ -214,7 +230,7 @@ void dmrtalg2::getRadiiVec(vector<double> *dmrt, const double escapeD, const dou
         for(size_t i =0 ; i < vecLength; i++)
         {
             //dmrt->push_back(minD+dR*(int(i)-1));
-            dmrt->push_back(minD+dR*(int(i)));
+            dmrt.push_back(minD+dR*(int(i)));
         }
     }
 }
@@ -231,9 +247,9 @@ void dmrtalg2::getMFPTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vec
         }
         if(started == true)
         {
-            if((*vec)[i][mDataColumn]>(*mRadii)[mInd])
+            if((*vec)[i][mDataColumn]>mRadii[mInd])
             {
-                while((*vec)[i][mDataColumn]>(*mRadii)[mInd] && (int)mInd < mVecLength-1)
+                while((*vec)[i][mDataColumn]>mRadii[mInd] && (int)mInd < mVecLength-1)
                 {
                     for (int j=0;j< int(mInd);j++)
                     {
@@ -252,9 +268,9 @@ void dmrtalg2::getMFPTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vec
                     started = false;
                 }
             }
-            else if((*vec)[i][mDataColumn]<(*mRadii)[mInd-1])
+            else if((*vec)[i][mDataColumn]<mRadii[mInd-1])
             {
-                while((*vec)[i][mDataColumn]<(*mRadii)[mInd-1] && mInd > 0)
+                while((*vec)[i][mDataColumn]<mRadii[mInd-1] && mInd > 0)
                 {
                     mInd--;
                 }
@@ -285,9 +301,9 @@ void dmrtalg2::getRTTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vect
         }
         if(started == true)
         {
-            if((*vec)[i][mDataColumn]>(*mRadii)[mInd])
+            if((*vec)[i][mDataColumn]>mRadii[mInd])
             {
-                while((*vec)[i][mDataColumn]>(*mRadii)[mInd] && (int)mInd < mVecLength)
+                while((*vec)[i][mDataColumn]>mRadii[mInd] && (int)mInd < mVecLength)
                 {
                     for (int j=0;j< int(mInd);j++)
                     {
@@ -301,9 +317,9 @@ void dmrtalg2::getRTTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vect
                     started = false;
                 }
             }
-            else if((*vec)[i][mDataColumn]<(*mRadii)[mInd-1])
+            else if((*vec)[i][mDataColumn]<mRadii[mInd-1])
             {
-                while((*vec)[i][mDataColumn]<(*mRadii)[mInd-1] && mInd > 0)
+                while((*vec)[i][mDataColumn]<mRadii[mInd-1] && mInd > 0)
                 {
                     mInd--;
                     for (int j=0;j< int(mInd);j++)
@@ -359,9 +375,9 @@ void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<v
         {
             //cout << mInd << endl;
             timer++;
-            if((*vec)[i][mDataColumn]>=(*mRadii)[mInd])
+            if((*vec)[i][mDataColumn]>=mRadii[mInd])
             {
-                while((*vec)[i][mDataColumn]>=(*mRadii)[mInd] && (int)mInd < mVecLength)
+                while((*vec)[i][mDataColumn]>=mRadii[mInd] && (int)mInd < mVecLength)
                 {
                     mInd++;
                 }
@@ -389,9 +405,9 @@ void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<v
                     locCounts[mInd][0]++;
                 }
             }
-            else if((*vec)[i][mDataColumn]<(*mRadii)[mInd-1])
+            else if((*vec)[i][mDataColumn]<mRadii[mInd-1])
             {
-                while((*vec)[i][mDataColumn]<(*mRadii)[mInd-1] && mInd > 0)
+                while((*vec)[i][mDataColumn]<mRadii[mInd-1] && mInd > 0)
                 {
                     mInd--;
                 }
@@ -457,9 +473,9 @@ void dmrtalg2::getMFPTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<ve
         }
         if(started == true)
         {
-            if((*vec)[i][mDataColumn]>(*mRadii)[mInd])
+            if((*vec)[i][mDataColumn]>mRadii[mInd])
             {
-                while((*vec)[i][mDataColumn]>(*mRadii)[mInd] && (int)mInd < mVecLength)
+                while((*vec)[i][mDataColumn]>mRadii[mInd] && (int)mInd < mVecLength)
                 {
                     //MFPT:
                     double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
@@ -469,12 +485,14 @@ void dmrtalg2::getMFPTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<ve
                 }
                 if (mInd == mVecLength)
                 {
+                    //double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
+                    //updateDMRTatQf(mVecLength-1,dmrt,counts ,upts,interTime);
                     started = false;
                 }
             }
-            else if((*vec)[i][mDataColumn]<(*mRadii)[mInd-1])
+            else if((*vec)[i][mDataColumn]<mRadii[mInd-1])
             {
-                while((*vec)[i][mDataColumn]<(*mRadii)[mInd-1] && mInd > 0)
+                while((*vec)[i][mDataColumn]<mRadii[mInd-1] && mInd > 0)
                 {
                     mInd--;
                     //MFPT:
@@ -507,9 +525,9 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
         }
         if(started == true)
         {
-            if((*vec)[i][mDataColumn]>(*mRadii)[mInd])
+            if((*vec)[i][mDataColumn]>mRadii[mInd])
             {
-                while((*vec)[i][mDataColumn]>(*mRadii)[mInd] && (int)mInd < mVecLength)
+                while((*vec)[i][mDataColumn]>mRadii[mInd] && (int)mInd < mVecLength)
                 {
                     // RTT:
                     double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
@@ -522,9 +540,9 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
                     started = false;
                 }
             }
-            else if((*vec)[i][mDataColumn]<(*mRadii)[mInd-1])
+            else if((*vec)[i][mDataColumn]<mRadii[mInd-1])
             {
-                while((*vec)[i][mDataColumn]<(*mRadii)[mInd-1] && mInd > 0)
+                while((*vec)[i][mDataColumn]<mRadii[mInd-1] && mInd > 0)
                 {
                     mInd--;
                     // RTT:
@@ -549,13 +567,13 @@ void dmrtalg2::makeHist(vector<vector<double> > &counts, const vector<vector<dou
 {
     for(size_t i = 0; i<(*vec).size(); i++)
     {
-        for(size_t j = 0; j<(*mRadii).size(); j++)
+        for(size_t j = 0; j<mRadii.size(); j++)
         {
-            if((*vec)[i][mDataColumn]>(*mRadii)[j])
+            if((*vec)[i][mDataColumn]>mRadii[j])
             {
-                for(size_t k = j+1; k<(*mRadii).size(); k++)
+                for(size_t k = j+1; k<mRadii.size(); k++)
                 {
-                    if((*vec)[i][mDataColumn]<(*mRadii)[k])
+                    if((*vec)[i][mDataColumn]<mRadii[k])
                     {
                         counts[k-1][1]=counts[k-1][1]+1;
                         break;
@@ -640,9 +658,9 @@ void dmrtalg2::getFPTfrom2DVectorCross(vector<vector<int> > &counts,const vector
         }
         if(started == true)
         {
-            if((*vec)[i][mDataColumn]>(*mRadii)[mInd])
+            if((*vec)[i][mDataColumn]>mRadii[mInd])
             {
-                while((*vec)[i][mDataColumn]>(*mRadii)[mInd] && (int)mInd < mVecLength)
+                while((*vec)[i][mDataColumn]>mRadii[mInd] && (int)mInd < mVecLength)
                 {
                     //FPT:
                     //double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][1],(*vec)[i][1]);
@@ -655,9 +673,9 @@ void dmrtalg2::getFPTfrom2DVectorCross(vector<vector<int> > &counts,const vector
                     started = false;
                 }
             }
-            else if((*vec)[i][mDataColumn]<(*mRadii)[mInd-1])
+            else if((*vec)[i][mDataColumn]<mRadii[mInd-1])
             {
-                while((*vec)[i][mDataColumn]<(*mRadii)[mInd-1] && mInd > 0)
+                while((*vec)[i][mDataColumn]<mRadii[mInd-1] && mInd > 0)
                 {
                     mInd--;
                     //FPT:

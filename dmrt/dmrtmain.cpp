@@ -49,7 +49,7 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
     dmrtalg2 eval = dmrtalg2(this->mMode,this->mVerb,end,start,interval, dataColumn);
     int vecLength = eval.getVecLength();
 
-    // The final vectors get an extra row to save the the radii in, in BINS mode the last column will be empty
+    // The final vectors get an extra row to save the radii in, in BINS mode the last column will be empty
     // according to common histogramn convention, size(bins)=size(hist)+1
 
     //(*finalDmrts) = vector< vector<double> >(vecLength+2,vector<double>(vecLength+1,0.0));
