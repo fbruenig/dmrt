@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <cmath>
+#include <string.h>
 
 
 /*
@@ -221,8 +222,32 @@ void dmrtalg2::updateVectorsRTT(vector<vector<double> > &dmrt, vector<vector<int
     }
 }
 
+void dmrtalg2::updateVectorsReachRate(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time)
+{
+
+    if(mInd==0)
+    {
+          updateDMRTatQf(mInd,dmrt,counts ,upts,time);
+    }
+    else if(mInd==mVecLength)
+    {
+          updateDMRTatQf(mInd,dmrt,counts ,upts,time);
+    }
+}
+
 void dmrtalg2::getRadiiVec(vector<double> &dmrt, const double escapeD, const double minD, const double dR)
 {
+    if(strncmp(this->mMode,"rate",4)==0)
+    {
+        double smalldR= 0.001*(escapeD-minD);
+        dmrt.push_back(minD);
+        dmrt.push_back(minD+smalldR);
+        dmrt.push_back(escapeD-smalldR);
+        dmrt.push_back(escapeD);
+        return;
+    }
+
+
     size_t vecLength;
     if (escapeD>minD)
     {
@@ -537,6 +562,7 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
                 }
                 if (mInd == mVecLength)
                 {
+                    updateVectorsReachRate(dmrt,counts,upts,interTime);
                     started = false;
                 }
             }
@@ -549,6 +575,60 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
                     double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
                     updateVectorsRTT(dmrt,counts ,upts,interTime);
                     //updateVectorsRTT(dmrt,counts ,upts,(*vec)[i][0]);
+                }
+                if (mInd == 0)
+                {
+                    updateVectorsReachRate(dmrt,counts,upts,interTime);
+                    started = false;
+                }
+            }
+        }
+        else
+        {
+            findStart2(started,(*vec)[i][mDataColumn]);
+        }
+    }
+}
+
+void dmrtalg2::getRatefrom2DVectorCross(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const vector<vector<double> > *vec)
+{
+    bool started = false;
+    bool reached = false
+    for(size_t i = 1; i<(*vec).size(); i++)
+    {
+        if((*vec)[i][0]<(*vec)[i-1][0])
+        {
+            initializeLocalVectors();
+            started = false;
+        }
+        if(started == true)
+        {
+            if((*vec)[i][mDataColumn]>mRadii[mInd])
+            {
+                while((*vec)[i][mDataColumn]>mRadii[mInd] && (int)mInd < mVecLength)
+                {
+                    //MFPT:
+                    double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
+                    updateVectorsRTT(dmrt,counts ,upts,interTime);
+                    //updateVectorsMFPT(dmrt,counts,(*vec)[i][0]);
+                    mInd++;
+                }
+                if (mInd == mVecLength)
+                {
+                    //double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
+                    //updateDMRTatQf(mVecLength-1,dmrt,counts ,upts,interTime);
+                    started = false;
+                }
+            }
+            else if((*vec)[i][mDataColumn]<mRadii[mInd-1])
+            {
+                while((*vec)[i][mDataColumn]<mRadii[mInd-1] && mInd > 0)
+                {
+                    mInd--;
+                    //MFPT:
+                    double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
+                    updateVectorsRTT(dmrt,counts ,upts,interTime);
+                    //updateVectorsMFPT(dmrt,counts,(*vec)[i][0]);
                 }
                 if (mInd == 0)
                 {
@@ -696,4 +776,3 @@ void dmrtalg2::getFPTfrom2DVectorCross(vector<vector<int> > &counts,const vector
     }
 }
 /////////////////////////////
-
