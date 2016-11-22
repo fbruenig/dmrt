@@ -227,11 +227,27 @@ void dmrtalg2::updateVectorsReachRate(vector<vector<double> > &dmrt, vector<vect
 
     if(mInd==0)
     {
-          updateDMRTatQf(mInd,dmrt,counts ,upts,time);
+        int i = mVecLength-1;
+        if (locCounts[mVecLength-1][0]!=0)
+        {
+            double relFin   = time-locStart[i][mInd];
+            dmrt[i][mInd]  += locDmrt[i][mInd] + (relFin*locCounts[i][mInd]);
+            counts[i][mInd] += locCounts[i][mInd];
+            locCounts[i][mInd]=0;
+            upts[i][mInd]++;
+        }
     }
     else if(mInd==mVecLength)
     {
-          updateDMRTatQf(mInd,dmrt,counts ,upts,time);
+        int i =0;
+        if (locCounts[0][mVecLength-1]!=0)
+        {
+            double relFin   = time-locStart[i][mVecLength-1];
+            dmrt[i][mVecLength-1]  += locDmrt[i][mVecLength-1] + (relFin*locCounts[i][mVecLength-1]);
+            counts[i][mVecLength-1] += locCounts[i][mVecLength-1];
+            locCounts[i][mVecLength-1]=0;
+            upts[i][mVecLength-1]++;
+        }
     }
 }
 
@@ -241,8 +257,8 @@ void dmrtalg2::getRadiiVec(vector<double> &dmrt, const double escapeD, const dou
     {
         double smalldR= 0.001*(escapeD-minD);
         dmrt.push_back(minD);
-        dmrt.push_back(minD+smalldR);
-        dmrt.push_back(escapeD-smalldR);
+        //dmrt.push_back(minD+smalldR);
+        //dmrt.push_back(escapeD-smalldR);
         dmrt.push_back(escapeD);
         return;
     }
@@ -617,7 +633,6 @@ void dmrtalg2::getRatefrom2DVectorCross(vector<vector<double> > &dmrt, vector<ve
                     //double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
                     //updateDMRTatQf(mVecLength-1,dmrt,counts ,upts,interTime);
                     updateVectorsReachRate(dmrt,counts,upts,interTime);
-                    started = false;
                 }
             }
             else if((*vec)[i][mDataColumn]<mRadii[mInd-1])
@@ -632,9 +647,7 @@ void dmrtalg2::getRatefrom2DVectorCross(vector<vector<double> > &dmrt, vector<ve
                 }
                 if (mInd == 0)
                 {
-
-                      updateVectorsReachRate(dmrt,counts,upts,interTime);
-                    started = false;
+                    updateVectorsReachRate(dmrt,counts,upts,interTime);
                 }
             }
         }
