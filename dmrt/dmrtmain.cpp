@@ -233,6 +233,18 @@ void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<i
                 eval.getFPTfrom2DVectorCross((*finalCounts),vec);
             }
         }
+        else if (strncmp(this->mMode,"rate",4)==0)
+        {
+            if (strncmp(this->mMode+4,"bins",4)==0)
+            {
+                cout << "Warning! Mode not implemented in current version!" << endl;
+            }
+            else if (strncmp(this->mMode+4,"cross",5)==0)
+            {
+                cout << "Initial config: "<< vecLength << endl;
+                eval.getRatefrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
+            }
+        }
         else if (strncmp(this->mMode,"tftp",4)==0)
         {
             if (strncmp(this->mMode+4,"bins",4)==0)

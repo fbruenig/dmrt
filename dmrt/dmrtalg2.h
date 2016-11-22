@@ -43,8 +43,11 @@ public:
     void getRTTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const vector<vector<double> > *vec);
     void getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const vector<vector<double> > *vec);
 
+    void getRatefrom2DVectorCross(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const vector<vector<double> > *vec);
+
     void updateVectorsMFPT(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time);
     void updateVectorsRTT(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time);
+    void updateVectorsReachRate(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time);
 
 //    void updateVectorsMFPTCont(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time);
     void updateDMRTatQf(const int i, vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time);
