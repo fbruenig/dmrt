@@ -209,16 +209,21 @@ void dmrtalg2::updateVectorsRTT(vector<vector<double> > &dmrt, vector<vector<int
         updateQfatQ(i,time);
 
         // update return dmrts for given Qf at mInd
+        mInd++;
         updateDMRTatQf(i,dmrt,counts ,upts,time);
-
+        mInd--;
     }
     for (int i=0;i< int(mInd);i++)
     {
         // update forward dmrts for given Qf at mInd
+
         updateDMRTatQf(i,dmrt,counts ,upts,time);
 
+
         // update return Qfs for given Q at mInd
+        mInd++;
         updateQfatQ(i,time);
+        mInd--;
     }
 }
 
@@ -537,7 +542,7 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
         {
             if((*vec)[i][mDataColumn]>mRadii[mInd])
             {
-                while((*vec)[i][mDataColumn]>mRadii[mInd] && (int)mInd < mVecLength)
+                while((*vec)[i][mDataColumn]>mRadii[mInd] && (int)mInd < mVecLength-1)
                 {
                     // RTT:
                     interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
@@ -545,7 +550,7 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
                     //updateVectorsRTT(dmrt,counts ,upts,(*vec)[i][0]);
                     mInd++;
                 }
-                if (mInd == mVecLength)
+                if (mInd == mVecLength-1)
                 {
                     started = false;
                 }
