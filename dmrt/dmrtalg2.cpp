@@ -10,12 +10,22 @@ In MFPT mode the matrices contain q_i in the first index and q_f in the second i
 
 
 Recent changes:
-*changed updateMethod from  (start-time) to (time-start)
-*problem remains: update in first neighbour index not performed due to safe recrossing implementation // FIXED!!!
+* changed updateMethod from  (start-time) to (time-start)
 *
-* IMPORTANT: radii vec in rtcross is shifted by one entry to the right, i.e. when the result contains -1.0
-  with interval 0.1 in first column, matrix values correspond to 0.9, this is unrelated to the fix in the updateVector methods
+* IMPORTANT: radii vec in rtcross is shifted by one entry to the right,
+* i.e. when the   result contains -1.0
+* with interval 0.1 in first column, matrix values correspond to 0.9, in forward triangle
+* this is inversed in the backward triangle, see illustration below:
 
+Current Matrix in RTCROSS mode (for the input A=-1.0 and B=1.0 and interval 0.1)
+pairs correspond to (Qi,Qf) coordinates
+
+0   #   #   #   #   (0.9,1.0)
+#   0   #   #   #   #
+#   #   0   #   #   #
+#   #   #   0   #   #
+#   #   #   #   0   #
+(0.9,1.0) ###   #   0
 
 */
 
@@ -207,7 +217,6 @@ void dmrtalg2::updateVectorsRTT(vector<vector<double> > &dmrt, vector<vector<int
 
         // update forward Qfs for given Q at mInd
         updateQfatQ(i,time);
-
         // update return dmrts for given Qf at mInd
         updateDMRTatQf(i,dmrt,counts ,upts,time);
 
@@ -216,7 +225,6 @@ void dmrtalg2::updateVectorsRTT(vector<vector<double> > &dmrt, vector<vector<int
     {
         // update forward dmrts for given Qf at mInd
         updateDMRTatQf(i,dmrt,counts ,upts,time);
-
         // update return Qfs for given Q at mInd
         updateQfatQ(i,time);
     }
