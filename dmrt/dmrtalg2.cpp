@@ -10,10 +10,11 @@ In MFPT mode the matrices contain q_i in the first index and q_f in the second i
 
 
 Recent changes:
-*changed mRadiiVec type
-*changed interpolation (Test it)
 *changed updateMethod from  (start-time) to (time-start)
-*problem remains: update in first neighbour index not performed due to safe recrossing implementation
+*problem remains: update in first neighbour index not performed due to safe recrossing implementation // FIXED!!!
+*
+* IMPORTANT: radii vec in rtcross is shifted by one entry to the right, i.e. when the result contains -1.0
+  with interval 0.1 in first column, matrix values correspond to 0.9
 
 
 */
@@ -105,7 +106,6 @@ void dmrtalg2::findStart2(bool& started, const double d)
         }
     }
 }
-
 
 
 void dmrtalg2::updateDMRTatQf(const int i, vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time)
@@ -222,43 +222,11 @@ void dmrtalg2::updateVectorsRTT(vector<vector<double> > &dmrt, vector<vector<int
     }
 }
 
-void dmrtalg2::updateVectorsReachRate(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time)
-{
-
-    if(mInd==0)
-    {
-        int i = mVecLength-1;
-        if (locCounts[mVecLength-1][0]!=0)
-        {
-            double relFin   = time-locStart[i][mInd];
-            dmrt[i][mInd]  += locDmrt[i][mInd] + (relFin*locCounts[i][mInd]);
-            counts[i][mInd] += locCounts[i][mInd];
-            locCounts[i][mInd]=0;
-            upts[i][mInd]++;
-        }
-    }
-    else if(mInd==mVecLength)
-    {
-        int i =0;
-        if (locCounts[0][mVecLength-1]!=0)
-        {
-            double relFin   = time-locStart[i][mVecLength-1];
-            dmrt[i][mVecLength-1]  += locDmrt[i][mVecLength-1] + (relFin*locCounts[i][mVecLength-1]);
-            counts[i][mVecLength-1] += locCounts[i][mVecLength-1];
-            locCounts[i][mVecLength-1]=0;
-            upts[i][mVecLength-1]++;
-        }
-    }
-}
-
 void dmrtalg2::getRadiiVec(vector<double> &dmrt, const double escapeD, const double minD, const double dR)
 {
     if(strncmp(this->mMode,"rate",4)==0)
     {
-        double smalldR= 0.001*(escapeD-minD);
         dmrt.push_back(minD);
-        //dmrt.push_back(minD+smalldR);
-        //dmrt.push_back(escapeD-smalldR);
         dmrt.push_back(escapeD);
         return;
     }
@@ -557,6 +525,7 @@ void dmrtalg2::getMFPTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<ve
 void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const vector<vector<double> > *vec)
 {
     bool started = false;
+    double interTime = 0.0;
     for(size_t i = 1; i<(*vec).size(); i++)
     {
         if((*vec)[i][0]<(*vec)[i-1][0])
@@ -571,7 +540,7 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
                 while((*vec)[i][mDataColumn]>mRadii[mInd] && (int)mInd < mVecLength)
                 {
                     // RTT:
-                    double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
+                    interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
                     updateVectorsRTT(dmrt,counts ,upts,interTime);
                     //updateVectorsRTT(dmrt,counts ,upts,(*vec)[i][0]);
                     mInd++;
@@ -587,7 +556,7 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
                 {
                     mInd--;
                     // RTT:
-                    double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
+                    interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
                     updateVectorsRTT(dmrt,counts ,upts,interTime);
                     //updateVectorsRTT(dmrt,counts ,upts,(*vec)[i][0]);
                 }
@@ -618,30 +587,30 @@ void dmrtalg2::getRatefrom2DVectorCross(vector<vector<double> > &dmrt, vector<ve
         }
         if(started == true)
         {
-            if((*vec)[i][mDataColumn]>mRadii[mInd])
+            if((*vec)[i][mDataColumn]>mRadii[mInd] && (int)mInd < mVecLength)
             {
                 while((*vec)[i][mDataColumn]>mRadii[mInd] && (int)mInd < mVecLength)
                 {
-                    //MFPT:
+                    //Rate:
                     interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
                     //updateVectorsRTT(dmrt,counts ,upts,interTime);
-                    for (int i=mInd+1;i< mVecLength;i++)
+                    for (int j=mInd+1;j< mVecLength;j++)
                     {
 
                         // update forward Qfs for given Q at mInd
-                        updateQfatQ(i,interTime);
+                        updateQfatQ(j,interTime);
 
                         // update return dmrts for given Qf at mInd
-                        //updateDMRTatQf(i,dmrt,counts ,upts,intertime);
+                        //updateDMRTatQf(j,dmrt,counts ,upts,intertime);
 
                     }
-                    for (int i=0;i< int(mInd);i++)
+                    for (int j=0;j< int(mInd);j++)
                     {
                         // update forward dmrts for given Qf at mInd
-                        //updateDMRTatQf(i,dmrt,counts ,upts,interTime);
+                        //updateDMRTatQf(j,dmrt,counts ,upts,interTime);
 
                         // update return Qfs for given Q at mInd
-                        updateQfatQ(i,interTime);
+                        updateQfatQ(j,interTime);
                     }
                     mInd++;
                 }
@@ -650,43 +619,38 @@ void dmrtalg2::getRatefrom2DVectorCross(vector<vector<double> > &dmrt, vector<ve
                     mInd--;
                     updateDMRTatQf(0,dmrt,counts ,upts,interTime);
                     mInd++;
-                    //updateVectorsRTT(dmrt,counts ,upts,interTime);
-                    //double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
-                    //updateDMRTatQf(mVecLength-1,dmrt,counts ,upts,interTime);
-                    //updateVectorsReachRate(dmrt,counts,upts,interTime);
                 }
             }
-            else if((*vec)[i][mDataColumn]<mRadii[mInd-1])
+            else if((*vec)[i][mDataColumn]<mRadii[mInd-1]&& mInd > 0)
             {
                 while((*vec)[i][mDataColumn]<mRadii[mInd-1] && mInd > 0)
                 {
                     mInd--;
-                    //MFPT:
+                    //Rate:
                     interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
-                    for (int i=mInd+1;i< mVecLength;i++)
+                    for (int j=mInd+1;j< mVecLength;j++)
                     {
 
                         // update forward Qfs for given Q at mInd
-                        updateQfatQ(i,interTime);
+                        updateQfatQ(j,interTime);
 
                         // update return dmrts for given Qf at mInd
-                        //updateDMRTatQf(i,dmrt,counts ,upts,interTime);
+                        //updateDMRTatQf(j,dmrt,counts ,upts,interTime);
 
                     }
-                    for (int i=0;i< int(mInd);i++)
+                    for (int j=0;j< int(mInd);j++)
                     {
                         // update forward dmrts for given Qf at mInd
-                        //updateDMRTatQf(i,dmrt,counts ,upts,time);
+                        //updateDMRTatQf(j,dmrt,counts ,upts,time);
 
                         // update return Qfs for given Q at mInd
-                        updateQfatQ(i,interTime);
+                        updateQfatQ(j,interTime);
                     }
-                    //updateVectorsRTT(dmrt,counts ,upts,interTime);
                 }
                 if (mInd == 0)
                 {
                     updateDMRTatQf(1,dmrt,counts ,upts,interTime);
-                    //updateVectorsReachRate(dmrt,counts,upts,interTime);
+
                 }
             }
         }

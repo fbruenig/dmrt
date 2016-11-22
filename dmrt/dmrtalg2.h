@@ -71,6 +71,7 @@ public:
     void updateCountsatQReturn(const int i);
     void updateCountsatQfReturn(const int i, vector<vector<int> > &counts);
 
+
 private:
 
     double mEpsilon = 0.00000001;
