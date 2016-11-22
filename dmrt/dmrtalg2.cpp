@@ -202,7 +202,7 @@ void dmrtalg2::updateVectorsMFPTCont(vector<vector<double> > &dmrt, vector<vecto
 
 void dmrtalg2::updateVectorsRTT(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time)
 {
-    for (int i=mInd;i< mVecLength;i++)
+    for (int i=mInd+1;i< mVecLength;i++)
     {
 
         // update forward Qfs for given Q at mInd
@@ -212,7 +212,7 @@ void dmrtalg2::updateVectorsRTT(vector<vector<double> > &dmrt, vector<vector<int
         updateDMRTatQf(i,dmrt,counts ,upts,time);
 
     }
-    for (int i=0;i< int(mInd-1);i++)
+    for (int i=0;i< int(mInd);i++)
     {
         // update forward dmrts for given Qf at mInd
         updateDMRTatQf(i,dmrt,counts ,upts,time);
@@ -624,15 +624,36 @@ void dmrtalg2::getRatefrom2DVectorCross(vector<vector<double> > &dmrt, vector<ve
                 {
                     //MFPT:
                     interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
-                    updateVectorsRTT(dmrt,counts ,upts,interTime);
-                    //updateVectorsMFPT(dmrt,counts,(*vec)[i][0]);
+                    //updateVectorsRTT(dmrt,counts ,upts,interTime);
+                    for (int i=mInd+1;i< mVecLength;i++)
+                    {
+
+                        // update forward Qfs for given Q at mInd
+                        updateQfatQ(i,interTime);
+
+                        // update return dmrts for given Qf at mInd
+                        //updateDMRTatQf(i,dmrt,counts ,upts,intertime);
+
+                    }
+                    for (int i=0;i< int(mInd);i++)
+                    {
+                        // update forward dmrts for given Qf at mInd
+                        //updateDMRTatQf(i,dmrt,counts ,upts,interTime);
+
+                        // update return Qfs for given Q at mInd
+                        updateQfatQ(i,interTime);
+                    }
                     mInd++;
                 }
                 if (mInd == mVecLength)
                 {
+                    mInd--;
+                    updateDMRTatQf(0,dmrt,counts ,upts,interTime);
+                    mInd++;
+                    //updateVectorsRTT(dmrt,counts ,upts,interTime);
                     //double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
                     //updateDMRTatQf(mVecLength-1,dmrt,counts ,upts,interTime);
-                    updateVectorsReachRate(dmrt,counts,upts,interTime);
+                    //updateVectorsReachRate(dmrt,counts,upts,interTime);
                 }
             }
             else if((*vec)[i][mDataColumn]<mRadii[mInd-1])
@@ -642,12 +663,30 @@ void dmrtalg2::getRatefrom2DVectorCross(vector<vector<double> > &dmrt, vector<ve
                     mInd--;
                     //MFPT:
                     interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
-                    updateVectorsRTT(dmrt,counts ,upts,interTime);
-                    //updateVectorsMFPT(dmrt,counts,(*vec)[i][0]);
+                    for (int i=mInd+1;i< mVecLength;i++)
+                    {
+
+                        // update forward Qfs for given Q at mInd
+                        updateQfatQ(i,interTime);
+
+                        // update return dmrts for given Qf at mInd
+                        //updateDMRTatQf(i,dmrt,counts ,upts,interTime);
+
+                    }
+                    for (int i=0;i< int(mInd);i++)
+                    {
+                        // update forward dmrts for given Qf at mInd
+                        //updateDMRTatQf(i,dmrt,counts ,upts,time);
+
+                        // update return Qfs for given Q at mInd
+                        updateQfatQ(i,interTime);
+                    }
+                    //updateVectorsRTT(dmrt,counts ,upts,interTime);
                 }
                 if (mInd == 0)
                 {
-                    updateVectorsReachRate(dmrt,counts,upts,interTime);
+                    updateDMRTatQf(1,dmrt,counts ,upts,interTime);
+                    //updateVectorsReachRate(dmrt,counts,upts,interTime);
                 }
             }
         }
