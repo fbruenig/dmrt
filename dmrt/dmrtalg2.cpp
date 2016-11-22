@@ -14,7 +14,7 @@ Recent changes:
 *problem remains: update in first neighbour index not performed due to safe recrossing implementation // FIXED!!!
 *
 * IMPORTANT: radii vec in rtcross is shifted by one entry to the right, i.e. when the result contains -1.0
-  with interval 0.1 in first column, matrix values correspond to 0.9
+  with interval 0.1 in first column, matrix values correspond to 0.9, this is unrelated to the fix in the updateVector methods
 
 
 */
