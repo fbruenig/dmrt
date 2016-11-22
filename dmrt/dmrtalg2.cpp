@@ -155,12 +155,12 @@ void dmrtalg2::updateCMatrixTFPT(vector<vector<double> > &counts)
 
 void dmrtalg2::updateVectorsMFPT(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time)
 {
-    for (int i=mInd;i< mVecLength;i++)
+    for (int i=mInd+1;i< mVecLength;i++)
     {
         // update forward Qfs for given Q at mInd
         updateQfatQ(i,time);
     }
-    for (int i=0;i< int(mInd-1);i++)
+    for (int i=0;i< int(mInd);i++)
     {
         // update forward dmrts for given Qf at mInd
         updateDMRTatQf(i,dmrt,counts ,upts,time);
