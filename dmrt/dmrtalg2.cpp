@@ -10,7 +10,6 @@ In MFPT mode the matrices contain q_i in the first index and q_f in the second i
 
 
 Recent changes:
-* changed updateMethod from  (start-time) to (time-start)
 *
 * IMPORTANT: radii vec in rtcross is shifted by one entry to the right,
 * i.e. when the   result contains -1.0
@@ -140,7 +139,7 @@ void dmrtalg2::updateQfatQ(const int i,const double time)
     }
     else
     {
-        locDmrt[mInd][i]+=  time - locStart[mInd][i];
+        locDmrt[mInd][i]+=  locStart[mInd][i]-time;
         locCounts[mInd][i]++;
     }
 }
