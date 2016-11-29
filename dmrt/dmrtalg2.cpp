@@ -211,7 +211,7 @@ void dmrtalg2::updateVectorsMFPTCont(vector<vector<double> > &dmrt, vector<vecto
 
 void dmrtalg2::updateVectorsRTT(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time)
 {
-    for (int i=mInd+1;i< mVecLength;i++)
+    for (int i=mInd;i< mVecLength;i++)
     {
 
         // update forward Qfs for given Q at mInd
@@ -220,7 +220,7 @@ void dmrtalg2::updateVectorsRTT(vector<vector<double> > &dmrt, vector<vector<int
         updateDMRTatQf(i,dmrt,counts ,upts,time);
 
     }
-    for (int i=0;i< int(mInd);i++)
+    for (int i=0;i< int(mInd-1);i++)
     {
         // update forward dmrts for given Qf at mInd
         updateDMRTatQf(i,dmrt,counts ,upts,time);
