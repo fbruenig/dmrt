@@ -26,12 +26,14 @@ public:
     void display(vector<double> *vector, size_t i);
     void displayLines(vector<vector<double> > *vec, int column, int lines);
 
-    vector<vector<double> > *read2Dvector();
-    vector<vector<double> > *read2Dvector(const vector<int> columnsOfInterest);
-    vector<vector<double> > *read2DvectorSpace(const vector<int> columnsOfInterest);
+    vector<vector<double> >* read2Dvector();
+    vector<vector<double> >* read2Dvector(const vector<int> columnsOfInterest);
 
-    vector<vector<double> > *read2DvectorSpace(const double rmin, const double rmax);
-    vector<vector<double> > *read2DvectorSpace4gb(const double rmin, const double rmax);
+    vector<vector<double> >* read2DvectorSpace();
+    vector<vector<double> >* read2DvectorSpace(const vector<int> columnsOfInterest);
+
+    vector<vector<double> >* read2DvectorSpace(const double rmin, const double rmax);
+    vector<vector<double> >* read2DvectorSpace4gb(const double rmin, const double rmax);
 
 // members:
 

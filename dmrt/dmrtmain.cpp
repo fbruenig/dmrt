@@ -1,5 +1,4 @@
 #include "dmrtmain.h"
-#include "dmrtalg.h"
 #include "dmrtalg2.h"
 #include "dmrtreader.h"
 #include <iostream>
@@ -8,8 +7,6 @@
 #include <string.h>
 
 using namespace std;
-
-
 
 dmrtMain::dmrtMain(const char *mode, bool verb)
 {

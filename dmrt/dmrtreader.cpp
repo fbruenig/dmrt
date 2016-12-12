@@ -13,7 +13,7 @@ dmrtReader::dmrtReader(ifstream *handle, bool verb)
     this->mVerb = verb;
 }
 
-vector<vector<double> > *dmrtReader::read2Dvector()
+vector<vector<double> >* dmrtReader::read2Dvector()
 {
     string line = string("");
     mData = new vector< vector<double>  >;
@@ -40,7 +40,7 @@ vector<vector<double> > *dmrtReader::read2Dvector()
     return this->mData;
 }
 
-vector<vector<double> > *dmrtReader::read2Dvector(const vector<int> columnsOfInterest)
+vector<vector<double> >* dmrtReader::read2Dvector(const vector<int> columnsOfInterest)
 {
     string line = string("");
     mData = new vector< vector<double>  >;
@@ -88,7 +88,7 @@ vector<vector<double> > *dmrtReader::read2Dvector(const vector<int> columnsOfInt
     return this->mData;
 }
 
-vector<vector<double> > *dmrtReader::read2DvectorSpace()
+vector<vector<double> >* dmrtReader::read2DvectorSpace()
 {
     string line = string("");
     mData = new vector< vector<double>  >;
@@ -124,7 +124,7 @@ vector<vector<double> > *dmrtReader::read2DvectorSpace()
 }
 
 
-vector<vector<double> > *dmrtReader::read2DvectorSpace(const double rmin, const double rmax)
+vector<vector<double> >* dmrtReader::read2DvectorSpace(const double rmin, const double rmax)
 {
     string line = string("");
     mData = new vector< vector<double>  >;
@@ -162,7 +162,7 @@ vector<vector<double> > *dmrtReader::read2DvectorSpace(const double rmin, const 
     return this->mData;
 }
 
-vector<vector<double> > *dmrtReader::read2DvectorSpace(const vector<int> columnsOfInterest)
+vector<vector<double> >* dmrtReader::read2DvectorSpace(const vector<int> columnsOfInterest)
 {
     string line = string("");
     mData = new vector< vector<double>  >;
@@ -210,7 +210,7 @@ vector<vector<double> > *dmrtReader::read2DvectorSpace(const vector<int> columns
     return this->mData;
 }
 
-vector<vector<double> > *dmrtReader::read2DvectorSpace4gb(const double rmin, const double rmax)
+vector<vector<double> >* dmrtReader::read2DvectorSpace4gb(const double rmin, const double rmax)
 {
     string line = string("");
     mData = new vector< vector<double>  >;
