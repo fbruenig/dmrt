@@ -52,8 +52,6 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
     // The final vectors get an extra row to save the radii in, in BINS mode the last column will be empty
     // according to common histogramn convention, size(bins)=size(hist)+1
 
-    //(*finalDmrts) = vector< vector<double> >(vecLength+2,vector<double>(vecLength+1,0.0));
-    //(*finalCounts) = vector< vector<int> >(vecLength+1,vector<int>(vecLength+1,0));
     (*finalDmrts) = vector< vector<double> >(vecLength+1,vector<double>(vecLength,0.0));
     (*finalCounts) = vector< vector<int> >(vecLength,vector<int>(vecLength,0));
     (*finalUpts) = vector< vector<int> >(vecLength,vector<int>(vecLength,0));
@@ -100,41 +98,25 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
             {
                 eval.getMFPTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
+            else if (strncmp(this->mMode+4,"full",5)==0)
+            {
+                eval.getMFPTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
+            }
         }
         else if (strncmp(this->mMode,"cftp",4)==0)
         {
             if (strncmp(this->mMode+4,"bins",4)==0)
             {
-                //eval.getFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),vec);
+                cout << "Warning! Mode not implemented in current version!" << endl;
             }
             else if (strncmp(this->mMode+4,"cross",5)==0)
             {
-                //cout << "Initial config: "<< vecLength << endl;
                 eval.getFPTfrom2DVectorCross((*finalCounts),vec);
             }
         }
         delete vec;
     }
     cout << "run complete!"<< endl;
-
-
-    /*
-    if ((strncmp(this->mMode+4,"bins",4)==0) || (strncmp(this->mMode+2,"bins",4)==0))
-    {
-        for (int i=0;i<vecLength;i++)
-        {
-            (*finalDmrts)[vecLength+1][i]=radii[i];
-        }
-    }
-    else
-    {
-        for (int i=0;i<vecLength;i++)
-        {
-            (*finalDmrts)[vecLength+1][i]=radii[i+1];
-        }
-    }
-    (*finalDmrts)[vecLength+1][vecLength]=(*finalDmrts)[vecLength+1][vecLength-1]+((*finalDmrts)[vecLength+1][2]-(*finalDmrts)[vecLength+1][1]);
-    */
 
     if(this->mVerb){cout << "Finished calculation!" << endl;}
     if ((*finalDmrts).size()== 0)
@@ -170,8 +152,6 @@ void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<i
     // The final vectors get an extra row to save the the radii in, in BINS mode the last column will be empty
     // according to common histogramn convention, size(bins)=size(hist)+1
 
-    //(*finalDmrts) = vector< vector<double> >(vecLength+2,vector<double>(vecLength+1,0.0));
-    //(*finalCounts) = vector< vector<int> >(vecLength+1,vector<int>(vecLength+1,0));
     (*finalDmrts) = vector< vector<double> >(vecLength+1,vector<double>(vecLength,0.0));
     (*finalCounts) = vector< vector<int> >(vecLength,vector<int>(vecLength,0));
     (*finalUpts) = vector< vector<int> >(vecLength,vector<int>(vecLength,0));
@@ -225,7 +205,6 @@ void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<i
             if (strncmp(this->mMode+4,"bins",4)==0)
             {
                 cout << "Warning! Mode not implemented in current version!" << endl;
-                //eval.getFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),vec);
             }
             else if (strncmp(this->mMode+4,"cross",5)==0)
             {
@@ -243,6 +222,11 @@ void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<i
             {
                 cout << "Initial config: "<< vecLength << endl;
                 eval.getRatefrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
+            }
+            else if (strncmp(this->mMode+4,"full",5)==0)
+            {
+                cout << "Initial config: "<< vecLength << endl;
+                eval.getRateFullfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
         }
         else if (strncmp(this->mMode,"tftp",4)==0)

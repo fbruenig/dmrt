@@ -22,19 +22,12 @@ static PyObject* py_dmrtMain(PyObject* self, PyObject* args)
             return NULL;
 
         dmrtMain prog = dmrtMain(mode,verb);
-        /*
-        cout << infile << endl;
-        cout << outfile << endl;
-        cout << start << endl;
-        cout << interval << endl;
-        cout << end << endl;
-        */
+
         if (verb==1){cout << "Entering in " << mode << " mode" << endl;}
 
         vector<vector<double> >* tes = new vector< vector<double> >;
         vector<vector<int> >* count = new vector< vector<int> >;
         vector<vector<int> >* upts = new vector< vector<int> >;
-        //prog.executeLongFile(tes,count,infile,outfile,start,interval,end);
         prog.execute2(tes,count,upts,infile,outfile,start,interval,end);
 
         PyObject * TwoDList =NULL;
@@ -117,7 +110,6 @@ static PyObject* py_dmrtMainInp(PyObject* self, PyObject* args)
         vector<vector<double> >* tes = new vector< vector<double> >;
         vector<vector<int> >* count = new vector< vector<int> >;
         vector<vector<int> >* upts = new vector< vector<int> >;
-        //prog.executeLongFile(tes,count,infile,outfile,start,interval,end);
         prog.executeFly(tes,count,upts,&data,start,interval,end);
 
         /* Clean up. */
@@ -174,14 +166,8 @@ static PyObject* py_dmrtMainInp(PyObject* self, PyObject* args)
 }
 
 
-
-
-
-
-
-
 /*
- * Bind Python function names to our C functions
+ * Bind Python function names to C functions
  */
 static PyMethodDef myModule_methods[] = {
         {"dmrt", py_dmrtMain, METH_VARARGS},
@@ -190,7 +176,7 @@ static PyMethodDef myModule_methods[] = {
 };
 
 /*
- * Python calls this to let us initialize our module
+ * Python calls this to initialize module
  */
 PyMODINIT_FUNC initlibdmrt(void)
 {
@@ -199,7 +185,3 @@ PyMODINIT_FUNC initlibdmrt(void)
     /* Load `numpy` functionality. */
     import_array();
 }
-
-
-
-

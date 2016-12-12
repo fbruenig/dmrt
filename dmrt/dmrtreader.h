@@ -6,9 +6,7 @@
 
 using namespace std;
 
-//#define MAXDOUBLEVEC 100000000
 #define MAXDOUBLEVEC 25000000
-//#define MAXDOUBLEVEC 5000000
 
 class dmrtReader
 {
@@ -19,33 +17,23 @@ public:
 
     dmrtReader(){};
 
-    dmrtReader(ifstream *handle);
-
-    dmrtReader(ifstream *handle, bool verb);
+    dmrtReader(ifstream *handle, bool verb=1);
 
     void print2DVectorToXVG(vector<vector<double> > *vec, ofstream *handle);
 
     void display(int i, int j);
-
     void display(vector< vector<double> > *vector, int i, int j);
-
     void display(vector<double> *vector, size_t i);
-
     void displayLines(vector<vector<double> > *vec, int column, int lines);
 
-    vector<vector<double> >* read2Dvector();
+    vector<vector<double> > *read2Dvector();
     vector<vector<double> > *read2Dvector(const vector<int> columnsOfInterest);
-
     vector<vector<double> > *read2DvectorSpace(const vector<int> columnsOfInterest);
 
-    vector<vector<double> > *read2DvectorSpace();
     vector<vector<double> > *read2DvectorSpace(const double rmin, const double rmax);
-
     vector<vector<double> > *read2DvectorSpace4gb(const double rmin, const double rmax);
 
-
 // members:
-
 
     vector< vector<double> >* mData;
 

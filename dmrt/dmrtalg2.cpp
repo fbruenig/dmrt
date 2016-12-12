@@ -8,9 +8,7 @@
 /*
 In MFPT mode the matrices contain q_i in the first index and q_f in the second index
 
-
 Recent changes:
-*
 * IMPORTANT: radii vec in rtcross is shifted by one entry to the right,
 * i.e. when the   result contains -1.0
 * with interval 0.1 in first column, matrix values correspond to 0.9, in forward triangle
@@ -27,7 +25,6 @@ pairs correspond to (Qi,Qf) coordinates
 (0.9,1.0) ###   #   0
 
 */
-
 
 
 using namespace std;
@@ -53,44 +50,19 @@ void dmrtalg2::initializeLocalVectors()
     this->locDmrt = vector<vector<double> >(mVecLength,vector<double>(mVecLength,0.0));
     this->locStart = vector<vector<double> >(mVecLength,vector<double>(mVecLength,0.0));
     this->locCounts = vector<vector<int> >(mVecLength,vector<int>(mVecLength,0));
+    this->mfptDistribution = vector<vector<double> > (2,vector<double>(0));
 }
 
 double dmrtalg2::interpolate(const double t1, const double t2, const double r1, const double r2)
 {
     const double dt = t2-t1;
     const double dr = r2-r1;
-    //double tf = abs(mRadii[mInd]-r1)/abs(dr);
     double tf = (mRadii[mInd]-r1)/dr;
     tf *= dt;
     tf +=t1;
     return tf;
 }
 
-/*
-void dmrtalg2::findStart(bool& started, const double d)
-{
-    if(d>=mRadii[0] && d<mRadii[mVecLength-1])
-    {
-        started = true;
-        if(d>=mRadii[0] &&d<mRadii[1])
-        {
-            mInd = 0;
-        }
-        else if(d>=mRadii[mVecLength-2] &&d<mRadii[mVecLength-1])
-        {
-            mInd = mVecLength-2;
-        }
-        else
-        {
-            mInd = 0;
-            while(!(d>=mRadii[mInd] && d<mRadii[mInd+1]))
-            {
-                mInd++;
-            }
-        }
-    }
-}
-*/
 
 void dmrtalg2::findStart2(bool& started, const double d)
 {
@@ -129,6 +101,25 @@ void dmrtalg2::updateDMRTatQf(const int i, vector<vector<double> > &dmrt, vector
     }
 }
 
+
+void dmrtalg2::updateDMRTatQfWithDistribution(const int i, vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time)
+{
+    if (locCounts[i][mInd]!=0)
+    {
+        double relFin   = time-locStart[i][mInd];
+        dmrt[i][mInd]  += locDmrt[i][mInd] + (relFin*locCounts[i][mInd]);
+        counts[i][mInd] += locCounts[i][mInd];
+        locCounts[i][mInd]=0;
+        upts[i][mInd]++;
+        // shitty implementation here!!
+        for(int j=0; j<mfptDistribution[i].size(); j++)
+        {
+            upts[i].push_back(mfptDistribution[i][j]);
+        }
+    }
+}
+
+
 void dmrtalg2::updateQfatQ(const int i,const double time)
 {
     if (locCounts[mInd][i]==0)
@@ -143,6 +134,24 @@ void dmrtalg2::updateQfatQ(const int i,const double time)
         locCounts[mInd][i]++;
     }
 }
+
+
+void dmrtalg2::updateQfatQWithDistribution(const int i,const double time)
+{
+    if (locCounts[mInd][i]==0)
+    {
+        locStart[mInd][i]=time;
+        locDmrt[mInd][i]  =0.0;
+        locCounts[mInd][i] = 1;
+    }
+    else
+    {
+        locDmrt[mInd][i]+=  locStart[mInd][i]-time;
+        locCounts[mInd][i]++;
+        mfptDistribution[i].push_back(locStart[mInd][i]-time);
+    }
+}
+
 
 void dmrtalg2::updateCMatrixTFPT(vector<vector<int> > &counts)
 {
@@ -176,39 +185,6 @@ void dmrtalg2::updateVectorsMFPT(vector<vector<double> > &dmrt, vector<vector<in
     }
 }
 
-/*
-void dmrtalg2::updateVectorsMFPTCont(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time)
-{
-    for (int i=mInd+1;i< mVecLength;i++)
-    {
-        // update forward Qfs for given Q at mInd
-        if (locCounts[mInd][i]==0)
-        {
-            locStart[mInd][i]=time;
-            locDmrt[mInd][i]  =0.0;
-        }
-        locDmrt[mInd][i]+=  locStart[mInd][i] -time;
-        locCounts[mInd][i]++;
-    }
-    for (int i=0;i< int(mInd);i++)
-    {
-        // update forward dmrts for given Qf at mInd
-        if (locCounts[i][mInd]!=0)
-        {
-            double relFin   = time-locStart[i][mInd];
-            double relCounts = counts[i][mInd];
-            counts[i][mInd] += locCounts[i][mInd];
-            relCounts /= counts[i][mInd];
-            dmrt[i][mInd]  =  relCounts* dmrt[i][mInd];
-            dmrt[i][mInd]  += (locDmrt[i][mInd] + (relFin*locCounts[i][mInd]))/counts[i][mInd];
-            locCounts[i][mInd]=0;
-            locStart[i][mInd] =0.0;
-            locDmrt[i][mInd]  =0.0;
-        }
-    }
-}
-*/
-
 void dmrtalg2::updateVectorsRTT(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time)
 {
     for (int i=mInd;i< mVecLength;i++)
@@ -237,7 +213,6 @@ void dmrtalg2::getRadiiVec(vector<double> &dmrt, const double escapeD, const dou
         dmrt.push_back(escapeD);
         return;
     }
-
 
     size_t vecLength;
     if (escapeD>minD)
@@ -274,11 +249,6 @@ void dmrtalg2::getMFPTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vec
                     }
                     mInd++;
                 }
-                //for (int j=0;j< int(mInd);j++)
-                //{
-                    // update forward dmrts for given Qf at mInd
-                //    updateDMRTatQf(j,dmrt,counts,(*vec)[i][0]);
-                //}
                 if (mInd == mVecLength-1)
                 {
                     started = false;
@@ -374,7 +344,6 @@ void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<v
             locCounts = vector<vector<int> >(mVecLength,vector<int>(mVecLength,0));
             bool newStart=false;
             findStart2(newStart,(*vec)[i][mDataColumn]);
-            // search for start of trajectory between the final states A,B
             while(newStart==true && i<(*vec).size()-3)
             {
                 i++;
@@ -496,13 +465,10 @@ void dmrtalg2::getMFPTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<ve
                     //MFPT:
                     double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
                     updateVectorsMFPT(dmrt,counts ,upts,interTime);
-                    //updateVectorsMFPT(dmrt,counts,(*vec)[i][0]);
                     mInd++;
                 }
                 if (mInd == mVecLength)
                 {
-                    //double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
-                    //updateDMRTatQf(mVecLength-1,dmrt,counts ,upts,interTime);
                     started = false;
                 }
             }
@@ -514,7 +480,6 @@ void dmrtalg2::getMFPTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<ve
                     //MFPT:
                     double interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
                     updateVectorsMFPT(dmrt,counts ,upts,interTime);
-                    //updateVectorsMFPT(dmrt,counts,(*vec)[i][0]);
                 }
                 if (mInd == 0)
                 {
@@ -549,7 +514,6 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
                     // RTT:
                     interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
                     updateVectorsRTT(dmrt,counts ,upts,interTime);
-                    //updateVectorsRTT(dmrt,counts ,upts,(*vec)[i][0]);
                     mInd++;
                 }
                 if (mInd == mVecLength)
@@ -565,7 +529,6 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
                     // RTT:
                     interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
                     updateVectorsRTT(dmrt,counts ,upts,interTime);
-                    //updateVectorsRTT(dmrt,counts ,upts,(*vec)[i][0]);
                 }
                 if (mInd == 0)
                 {
@@ -667,6 +630,95 @@ void dmrtalg2::getRatefrom2DVectorCross(vector<vector<double> > &dmrt, vector<ve
         }
     }
 }
+
+void dmrtalg2::getRateFullfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const vector<vector<double> > *vec)
+{
+    bool started = false;
+    bool reached = false;
+    double interTime =0.0;
+    for(size_t i = 1; i<(*vec).size(); i++)
+    {
+        if((*vec)[i][0]<(*vec)[i-1][0])
+        {
+            initializeLocalVectors();
+            started = false;
+        }
+        if(started == true)
+        {
+            if((*vec)[i][mDataColumn]>mRadii[mInd] && (int)mInd < mVecLength)
+            {
+                while((*vec)[i][mDataColumn]>mRadii[mInd] && (int)mInd < mVecLength)
+                {
+                    //Rate:
+                    interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
+                    //updateVectorsRTT(dmrt,counts ,upts,interTime);
+                    for (int j=mInd+1;j< mVecLength;j++)
+                    {
+
+                        // update forward Qfs for given Q at mInd
+                        updateQfatQWithDistribution(j,interTime);
+
+                        // update return dmrts for given Qf at mInd
+                        //updateDMRTatQf(j,dmrt,counts ,upts,intertime);
+
+                    }
+                    for (int j=0;j< int(mInd);j++)
+                    {
+                        // update forward dmrts for given Qf at mInd
+                        //updateDMRTatQf(j,dmrt,counts ,upts,interTime);
+
+                        // update return Qfs for given Q at mInd
+                        updateQfatQWithDistribution(j,interTime);
+                    }
+                    mInd++;
+                }
+                if (mInd == mVecLength)
+                {
+                    mInd--;
+                    updateDMRTatQfWithDistribution(0,dmrt,counts ,upts,interTime);
+                    mInd++;
+                }
+            }
+            else if((*vec)[i][mDataColumn]<mRadii[mInd-1]&& mInd > 0)
+            {
+                while((*vec)[i][mDataColumn]<mRadii[mInd-1] && mInd > 0)
+                {
+                    mInd--;
+                    //Rate:
+                    interTime = interpolate((*vec)[i-1][0],(*vec)[i][0],(*vec)[i-1][mDataColumn],(*vec)[i][mDataColumn]);
+                    for (int j=mInd+1;j< mVecLength;j++)
+                    {
+
+                        // update forward Qfs for given Q at mInd
+                        updateQfatQWithDistribution(j,interTime);
+
+                        // update return dmrts for given Qf at mInd
+                        //updateDMRTatQf(j,dmrt,counts ,upts,interTime);
+
+                    }
+                    for (int j=0;j< int(mInd);j++)
+                    {
+                        // update forward dmrts for given Qf at mInd
+                        //updateDMRTatQf(j,dmrt,counts ,upts,time);
+
+                        // update return Qfs for given Q at mInd
+                        updateQfatQWithDistribution(j,interTime);
+                    }
+                }
+                if (mInd == 0)
+                {
+                    updateDMRTatQfWithDistribution(1,dmrt,counts ,upts,interTime);
+
+                }
+            }
+        }
+        else
+        {
+            findStart2(started,(*vec)[i][mDataColumn]);
+        }
+    }
+}
+
 
 void dmrtalg2::makeHist(vector<vector<double> > &counts, const vector<vector<double> > *vec)
 {

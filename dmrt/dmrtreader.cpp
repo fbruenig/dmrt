@@ -7,12 +7,6 @@
 
 using namespace std;
 
-dmrtReader::dmrtReader(ifstream *handle)
-{
-    this->mFilehandle=handle;
-    this->mVerb=1;
-}
-
 dmrtReader::dmrtReader(ifstream *handle, bool verb)
 {
     this->mFilehandle=handle;
@@ -111,7 +105,6 @@ vector<vector<double> > *dmrtReader::read2DvectorSpace()
         {
             if(!column.empty() && index<2)
             {
-                //if (nLines > 135000000) {cout << nLines <<" "<<mData->max_size() <<" "<< column << " " << line_ss.str() << endl;}
                 col[index]=strtod(column.c_str(),NULL) ;
                 index++;
             }
@@ -148,7 +141,6 @@ vector<vector<double> > *dmrtReader::read2DvectorSpace(const double rmin, const 
         {
             if(!column.empty() && index<2)
             {
-                //if (nLines > 135000000) {cout << nLines <<" "<<mData->max_size() <<" "<< column << " " << line_ss.str() << endl;}
                 col[index]=strtod(column.c_str(),NULL) ;
                 index++;
             }
@@ -223,8 +215,7 @@ vector<vector<double> > *dmrtReader::read2DvectorSpace4gb(const double rmin, con
     string line = string("");
     mData = new vector< vector<double>  >;
     int nLines = 0;
-    //ifstream is = *mFilehandle;
-    //is.seekg(mFPosition);
+
     while(getline(*mFilehandle,line) && mData->size() < MAXDOUBLEVEC)
     {
 
@@ -236,7 +227,6 @@ vector<vector<double> > *dmrtReader::read2DvectorSpace4gb(const double rmin, con
         {
             if(!column.empty() && index<2)
             {
-                //if (nLines > 135000000) {cout << nLines <<" "<<mData->max_size() <<" "<< column << " " << line_ss.str() << endl;}
                 col[index]=strtod(column.c_str(),NULL) ;
                 index++;
             }
@@ -254,7 +244,6 @@ vector<vector<double> > *dmrtReader::read2DvectorSpace4gb(const double rmin, con
             if(this->mVerb == 1){cout <<"Could not read line " << nLines << endl;}
         }
     }
-    //this->mFPosition = is.tellg();
     if(this->mVerb){cout <<  "read " << nLines << " lines" << endl;}
     return this->mData;
 }
