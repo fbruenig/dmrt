@@ -1,8 +1,11 @@
 build-dmrt-Desktop-Debug/*
-build-dmrt-Desktop-Release/*  
-build-dmrtgcc-Desktop-Debug/*  
+build-dmrt-Desktop-Release/*
+build-dmrtgcc-Desktop-Debug/*
 build-dmrtgcc-Desktop-Release/*
 dmrt-build-desktop-Qt_4_8_2_in_PATH__System__Release/*
-output-1-0.4_reduced.txt  
+output-1-0.4_reduced.txt
 test.txt
 *.user
+*.o
+__pycache__*
+pydmrt.cpython*
