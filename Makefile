@@ -15,9 +15,9 @@ CXXFLAGS      = -m64 -pipe -std=c++11 -Wall -Wextra -pedantic -fPIC -shared -fop
 INCPATH       = -I./dmrt -I/home/rottee/Python/include/python2.7
 LINK          = g++
 LFLAGS        = -m64 -Wl,-O1 -shared -Wl,-soname,libdmrt.so.1
-LIBS          = $(SUBLIBS)   -L/home/rottee/Python/lib/python2.7 -lpython2.7 -lgomp 
+LIBS          = $(SUBLIBS)   -L/home/rottee/Python/lib/python2.7 -lpython2.7 -lgomp
 AR            = ar cqs
-RANLIB        = 
+RANLIB        =
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 COPY          = cp -f
@@ -41,18 +41,16 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = ./dmrt/dmrtalg.cpp \
-		./dmrt/dmrtalg2.cpp \
+SOURCES       = ./dmrt/dmrtalg2.cpp \
 		./dmrt/dmrtreader.cpp \
 		./dmrt/dmrtmain.cpp \
-		./dmrt/libdmrt.cpp 
-		
-OBJECTS       = dmrtalg.o \
-		dmrtalg2.o \
+		./dmrt/libdmrt.cpp
+
+OBJECTS       = dmrtalg2.o \
 		dmrtreader.o \
 		dmrtmain.o \
 		libdmrt.o
-		
+
 TARGET        = libdmrt.so.1.0.0
 TARGETA       = libdmrt.a
 TARGETD       = libdmrt.so.1.0.0
@@ -84,7 +82,7 @@ first: all
 
 all: Makefile  $(TARGET)
 
-$(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)  
+$(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)
 	-$(DEL_FILE) $(TARGET) $(TARGET0) $(TARGET1) $(TARGET2)
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(LIBS) $(OBJCOMP)
 	-ln -s $(TARGET) $(TARGET0)
@@ -94,15 +92,15 @@ $(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)
 
 staticlib: $(TARGETA)
 
-$(TARGETA):  $(OBJECTS) $(OBJCOMP) 
-	-$(DEL_FILE) $(TARGETA) 
+$(TARGETA):  $(OBJECTS) $(OBJCOMP)
+	-$(DEL_FILE) $(TARGETA)
 	$(AR) $(TARGETA) $(OBJECTS)
-dist: 
-	@$(CHK_DIR_EXISTS) .tmp/dmrt1.0.0 || $(MKDIR) .tmp/dmrt1.0.0 
+dist:
+	@$(CHK_DIR_EXISTS) .tmp/dmrt1.0.0 || $(MKDIR) .tmp/dmrt1.0.0
 	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/dmrt1.0.0/ && (cd `dirname .tmp/dmrt1.0.0` && $(TAR) dmrt1.0.0.tar dmrt1.0.0 && $(COMPRESS) dmrt1.0.0.tar) && $(MOVE) `dirname .tmp/dmrt1.0.0`/dmrt1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/dmrt1.0.0
 
 
-clean:compiler_clean 
+clean:compiler_clean
 	-$(DEL_FILE) $(OBJECTS)
 	-$(DEL_FILE) *~ core *.core
 
@@ -110,7 +108,7 @@ clean:compiler_clean
 ####### Sub-libraries
 
 distclean: clean
-	-$(DEL_FILE) $(TARGET) 
+	-$(DEL_FILE) $(TARGET)
 	-$(DEL_FILE) $(TARGET0) $(TARGET1) $(TARGET2) $(TARGETA)
 	-$(DEL_FILE) Makefile
 
@@ -127,12 +125,9 @@ compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: 
+compiler_clean:
 
 ####### Compile
-
-dmrtalg.o: ./dmrt/dmrtalg.cpp ./dmrt/dmrtalg.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dmrtalg.o ./dmrt/dmrtalg.cpp
 
 dmrtalg2.o: ./dmrt/dmrtalg2.cpp ./dmrt/dmrtalg2.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dmrtalg2.o ./dmrt/dmrtalg2.cpp
@@ -141,7 +136,7 @@ dmrtreader.o: ./dmrt/dmrtreader.cpp ./dmrt/dmrtreader.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dmrtreader.o ./dmrt/dmrtreader.cpp
 
 dmrtmain.o: ./dmrt/dmrtmain.cpp ./dmrt/dmrtmain.h \
-		./dmrt/dmrtalg.h \
+		./dmrt/dmrtalg2.h \
 		./dmrt/dmrtreader.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dmrtmain.o ./dmrt/dmrtmain.cpp
 
@@ -151,7 +146,7 @@ libdmrt.o: ./dmrt/libdmrt.cpp ./dmrt/dmrtmain.h
 ####### Install
 
 install_target: first FORCE
-	@$(CHK_DIR_EXISTS) $(INSTALL_ROOT)/opt/dmrt/bin/ || $(MKDIR) $(INSTALL_ROOT)/opt/dmrt/bin/ 
+	@$(CHK_DIR_EXISTS) $(INSTALL_ROOT)/opt/dmrt/bin/ || $(MKDIR) $(INSTALL_ROOT)/opt/dmrt/bin/
 	-$(INSTALL_PROGRAM) "$(TARGET)" "$(INSTALL_ROOT)/opt/dmrt/bin/$(TARGET)"
 	-$(STRIP) --strip-unneeded "$(INSTALL_ROOT)/opt/dmrt/bin/$(TARGET)"
 	-$(SYMLINK) "$(TARGET)" "$(INSTALL_ROOT)/opt/dmrt/bin/$(TARGET0)"
@@ -159,11 +154,11 @@ install_target: first FORCE
 	-$(SYMLINK) "$(TARGET)" "$(INSTALL_ROOT)/opt/dmrt/bin/$(TARGET2)"
 
 uninstall_target:  FORCE
-	-$(DEL_FILE) "$(INSTALL_ROOT)/opt/dmrt/bin/$(TARGET)" 
-	 -$(DEL_FILE) "$(INSTALL_ROOT)/opt/dmrt/bin/$(TARGET0)" 
-	 -$(DEL_FILE) "$(INSTALL_ROOT)/opt/dmrt/bin/$(TARGET1)" 
+	-$(DEL_FILE) "$(INSTALL_ROOT)/opt/dmrt/bin/$(TARGET)"
+	 -$(DEL_FILE) "$(INSTALL_ROOT)/opt/dmrt/bin/$(TARGET0)"
+	 -$(DEL_FILE) "$(INSTALL_ROOT)/opt/dmrt/bin/$(TARGET1)"
 	 -$(DEL_FILE) "$(INSTALL_ROOT)/opt/dmrt/bin/$(TARGET2)"
-	-$(DEL_DIR) $(INSTALL_ROOT)/opt/dmrt/bin/ 
+	-$(DEL_DIR) $(INSTALL_ROOT)/opt/dmrt/bin/
 
 
 install:  install_target  FORCE
