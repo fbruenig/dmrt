@@ -42,7 +42,7 @@ dmrtalg2::dmrtalg2(const char *mode, bool verb, const double escapeD, const doub
     mDataColumn = dataColumn;
     getRadiiVec(mRadii,escapeD,minD,dR);
     mVecLength = mRadii.size();
-    initializeLocalVectors();
+    //initializeLocalVectors();
 }
 
 void dmrtalg2::initializeLocalVectors()
