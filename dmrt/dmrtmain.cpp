@@ -14,8 +14,9 @@ dmrtMain::dmrtMain(const char *mode, bool verb)
     this->mMode=mode;
 }
 
-dmrtMain::initLocalVectors(const double start, const double interval, const double end, const int dataColumn)
+void dmrtMain::initLocalVectors(const double start, const double interval, const double end, const int dataColumn)
 {
+
   this->eval = dmrtalg2(this->mMode,this->mVerb,end,start,interval, dataColumn);
   eval.initializeLocalVectors();
 }
@@ -147,17 +148,14 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
     myfile.close();
 }
 
-void dmrtMain::executeFlyContinue(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts,const vector< vector<double> >* vec)
-{
-  executeFly(finalDmrts,finalCounts,finalUpts,vec, start, interval, end, dataColumn);
-}
-
 void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts,const vector< vector<double> >* vec, const double start, const double interval, const double end, const int dataColumn)
 {
-    if (eval != eval)
-    {
-      initLocalVectors(start, interval, end, dataColumn);
-    }
+        initLocalVectors(start, interval, end, dataColumn);
+        executeFly(finalDmrts,finalCounts,finalUpts,vec);
+}
+
+void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts,const vector< vector<double> >* vec)
+{
 
     int vecLength = eval.getVecLength();
 
