@@ -151,10 +151,10 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
 void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts,const vector< vector<double> >* vec, const double start, const double interval, const double end, const int dataColumn)
 {
         initLocalVectors(start, interval, end, dataColumn);
-        executeFly(finalDmrts,finalCounts,finalUpts,vec);
+        executeFly_continue(finalDmrts,finalCounts,finalUpts,vec);
 }
 
-void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts,const vector< vector<double> >* vec)
+void dmrtMain::executeFly_continue(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts,const vector< vector<double> >* vec)
 {
 
     int vecLength = eval.getVecLength();

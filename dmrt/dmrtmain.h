@@ -19,7 +19,7 @@ public:
 
     void executeFly(vector<vector<double> > *finalDmrts, vector<vector<int> > *finalCounts, vector<vector<int> > *finalUpts, const vector<vector<double> > *vec, const double start, const double interval, const double end, const int dataColumn = 1);
 
-    void executeFly(vector<vector<double> > *finalDmrts, vector<vector<int> > *finalCounts, vector<vector<int> > *finalUpts, const vector<vector<double> > *vec);
+    void executeFly_continue(vector<vector<double> > *finalDmrts, vector<vector<int> > *finalCounts, vector<vector<int> > *finalUpts, const vector<vector<double> > *vec);
 
 private:
     bool mVerb;
