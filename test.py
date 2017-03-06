@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import pydmrt
-import diffTool as dt
+import diffTools as dt
 import numpy as np
 import matplotlib.pyplot as plt
 from pylab import *
