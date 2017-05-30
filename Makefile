@@ -10,8 +10,8 @@
 CC            = gcc
 CXX           = gcc
 DEFINES       = -DQT_WEBKIT
-CFLAGS        = -m64 -pipe -O2 -Wall -W -fPIC $(DEFINES)
-CXXFLAGS      = -m64 -pipe -std=c++11 -Wall -Wextra -pedantic -fPIC -shared -fopenmp -O2 -Wall -W -fPIC $(DEFINES)
+CFLAGS        = -m64 -pipe -O2 -Wno-sign-compare -Wno-unused-function -Wno-unused-parameter -fPIC $(DEFINES)
+CXXFLAGS      = -m64 -pipe -std=c++11 -Wall -Wextra -pedantic -fPIC -shared -fopenmp -O2 -Wno-sign-compare -Wno-unused-function -Wno-unused-parameter -fPIC $(DEFINES)
 INCPATH       = -I./dmrt -I/home/rottee/Python/include/python2.7
 LINK          = g++
 LFLAGS        = -m64 -Wl,-O1 -shared -Wl,-soname,libdmrt.so.1
