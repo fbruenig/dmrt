@@ -294,6 +294,6 @@ int dmrtMain::execute2(int argc, const char *argv[])
     vector<vector<int> >* count = new vector< vector<int> >;
     vector<vector<int> >* upts = new vector< vector<int> >;
     execute2(tes,count,upts,argv[1],argv[2], atof(argv[3]), atof(argv[4]), atof(argv[5]));
-    dmrtReader reader = dmrtReader();
+    //dmrtReader reader = dmrtReader();
     return 0;
 }
