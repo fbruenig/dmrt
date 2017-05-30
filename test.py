@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-import pydmrt
 import diffTools as dt
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,7 +10,7 @@ print("Starting pydmrt test")
 testtraj = np.loadtxt("./test_traj_doublewell_od.txt")
 
 #&inputVec1, &start, &interval,&end,&mode,&verb
-dmrtTms, dmrtCts, dmrtUpts = pydmrt.dmrtInp(testtraj, -1.7, 0.1, 1.7, "rtcross",True)
+dmrtTms, dmrtCts, dmrtUpts = dt.pydmrt(testtraj, -1.7, 0.1, 1.7, "rtcross",True)
 
 refTms = np.loadtxt("./reference_Tms.txt")
 refCts = np.loadtxt("./reference_Cts.txt")
