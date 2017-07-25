@@ -10,6 +10,7 @@ class dmrtalg2
 public:
     dmrtalg2();
     dmrtalg2(const char *mode, bool verb, const double escapeD, const double minD, const double dR, const int dataColumn = 1);
+    dmrtalg2(const char *mode, bool verb, const vector<double>& radii, const int dataColumn = 1);
 
     //Current implementation is purely based on binning as setup in the member function findstart2
     //Accordingly for radii r[i],r[i+1],r[i+2]... updates are done a follows:
@@ -29,6 +30,7 @@ public:
     void findStart2(bool &started, const double d);
     double interpolate(const double t1, const double t2, const double r1, const double r2);
     void makeHist(vector<vector<double> > &counts, const vector<vector<double> > *vec);
+    void makeHistBinnedStatistics(vector<vector<double> > &vals, const vector<vector<double> > *vec, const int binIndex, const int valIndex);
 
 
     // MFTP/RTT extraction (option == mftp oder rt)
@@ -74,6 +76,8 @@ public:
     void updateCountsatQReturn(const int i);
     void updateCountsatQfReturn(const int i, vector<vector<int> > &counts);
 
+    vector<vector<vector<double>>> * mfptDistribution;
+
 
 private:
 
@@ -81,15 +85,19 @@ private:
     bool mVerb;
     const char* mMode;
     double mDq;
-    int mVecLength ;
+
     size_t mInd;
-    vector<double> mRadii;
     vector<vector<double> > locDmrt;
     vector<vector<double> > locStart;
-    vector<vector<int> > locCounts;
-    vector<vector<double> > mfptDistribution;
+    vector<vector<int> >    locCounts;
+    vector<vector<double> > fptDistribution;
+
+    vector<double> mRadii;
+    int mVecLength ;
 
     int mDataColumn;
+
+    bool recordMFPTdistribution;
 
 };
 

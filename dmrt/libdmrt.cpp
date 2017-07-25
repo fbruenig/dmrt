@@ -110,7 +110,9 @@ static PyObject* py_dmrtMainInp(PyObject* self, PyObject* args)
         vector<vector<double> >* tes = new vector< vector<double> >;
         vector<vector<int> >* count = new vector< vector<int> >;
         vector<vector<int> >* upts = new vector< vector<int> >;
-        prog.executeFly(tes,count,upts,&data,start,interval,end);
+        vector<vector<vector <double> > >* dist = new vector< vector< vector<double> > >;
+
+        prog.executeFly(tes,count,upts,dist,&data,start,interval,end);
 
         /* Clean up. */
         Py_DECREF(input);
@@ -118,8 +120,9 @@ static PyObject* py_dmrtMainInp(PyObject* self, PyObject* args)
         PyObject * TwoDList =NULL;
         PyObject * TwoDListCounts =NULL;
         PyObject * TwoDListUpts =NULL;
+        //PyObject * ThreeDListDist =NULL;
 
-        if (strncmp(mode,"rt",2)==0 || strncmp(mode+1,"ftp",3)==0)
+        if (strncmp(mode,"rt",2)==0 || strncmp(mode+1,"ftp",3)==0 || strncmp(mode+1,"fpt",3)==0)
         {
             size_t veclength = tes->size()-1;
             TwoDList = PyList_New(veclength+1);

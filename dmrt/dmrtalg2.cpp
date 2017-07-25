@@ -42,15 +42,35 @@ dmrtalg2::dmrtalg2(const char *mode, bool verb, const double escapeD, const doub
     mDataColumn = dataColumn;
     getRadiiVec(mRadii,escapeD,minD,dR);
     mVecLength = mRadii.size();
-    //initializeLocalVectors();
+    if (strncmp(this->mMode+6,"dist",4)==0 || strncmp(this->mMode+8,"dist",4)==0 || strncmp(this->mMode+7,"dist",4)==0 ||strncmp(this->mMode+9,"dist",4)==0){this->recordMFPTdistribution=true;}
+    else{recordMFPTdistribution=false;}
+    // THESE vectors need to be initialized!!!
+    //this->mfptDistribution = vector<vector<vector<double> > > (mVecLength,vector<vector<double>>(mVecLength,vector<double>(0)));
+    //this->fptDistribution = vector<vector<double> > (2,vector<double>(0));
 }
+
+dmrtalg2::dmrtalg2(const char *mode, bool verb, const vector<double>& radii, const int dataColumn)
+{
+    mMode=mode;
+    mVerb=verb;
+    mRadii = vector<double>(radii);
+    mInd = 0;
+    mDataColumn = dataColumn;
+    mVecLength = mRadii.size();
+    if (strncmp(this->mMode+6,"dist",4)==0 || strncmp(this->mMode+8,"dist",4)==0 || strncmp(this->mMode+7,"dist",4)==0 ||strncmp(this->mMode+9,"dist",4)==0){this->recordMFPTdistribution=true;}
+    else{recordMFPTdistribution=false;}
+    // THESE vectors need to be initialized!!!
+    //this->mfptDistribution = vector<vector<vector<double> > > (mVecLength,vector<vector<double>>(mVecLength,vector<double>(0)));
+    //this->fptDistribution = vector<vector<double> > (2,vector<double>(0));
+
+}
+
 
 void dmrtalg2::initializeLocalVectors()
 {
-    this->locDmrt = vector<vector<double> >(mVecLength,vector<double>(mVecLength,0.0));
-    this->locStart = vector<vector<double> >(mVecLength,vector<double>(mVecLength,0.0));
-    this->locCounts = vector<vector<int> >(mVecLength,vector<int>(mVecLength,0));
-    this->mfptDistribution = vector<vector<double> > (2,vector<double>(0));
+    locDmrt = vector<vector<double> >(mVecLength,vector<double>(mVecLength,0.0));
+    locStart = vector<vector<double> >(mVecLength,vector<double>(mVecLength,0.0));
+    locCounts = vector<vector<int> >(mVecLength,vector<int>(mVecLength,0));
 }
 
 double dmrtalg2::interpolate(const double t1, const double t2, const double r1, const double r2)
@@ -91,13 +111,23 @@ void dmrtalg2::findStart2(bool& started, const double d)
 
 void dmrtalg2::updateDMRTatQf(const int i, vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time)
 {
+    if (i==mInd)
+    {
+        locCounts[i][mInd] =0;
+    }
     if (locCounts[i][mInd]!=0)
     {
         double relFin   = time-locStart[i][mInd];
-        dmrt[i][mInd]  += locDmrt[i][mInd] + (relFin*locCounts[i][mInd]);
+        double mfpt = relFin*locCounts[i][mInd];
+        dmrt[i][mInd]  += locDmrt[i][mInd] + mfpt;
         counts[i][mInd] += locCounts[i][mInd];
         locCounts[i][mInd]=0;
         upts[i][mInd]++;
+        if (this->recordMFPTdistribution==true && mfpt>0.0)
+        {
+            //cout << "MFPT " << mfpt << " " << i << " " << mInd << endl;
+            (*mfptDistribution)[i][mInd].push_back(mfpt);
+        }
     }
 }
 
@@ -112,9 +142,9 @@ void dmrtalg2::updateDMRTatQfWithDistribution(const int i, vector<vector<double>
         locCounts[i][mInd]=0;
         upts[i][mInd]++;
         // shitty implementation here!!
-        for(int j=0; j<mfptDistribution[i].size(); j++)
+        for(int j=0; j<fptDistribution[i].size(); j++)
         {
-            upts[i].push_back(mfptDistribution[i][j]);
+            upts[i].push_back(fptDistribution[i][j]);
         }
     }
 }
@@ -122,6 +152,7 @@ void dmrtalg2::updateDMRTatQfWithDistribution(const int i, vector<vector<double>
 
 void dmrtalg2::updateQfatQ(const int i,const double time)
 {
+    //cout << mInd << " " << i << endl;
     if (locCounts[mInd][i]==0)
     {
         locStart[mInd][i]=time;
@@ -148,7 +179,7 @@ void dmrtalg2::updateQfatQWithDistribution(const int i,const double time)
     {
         locDmrt[mInd][i]+=  locStart[mInd][i]-time;
         locCounts[mInd][i]++;
-        mfptDistribution[i].push_back(locStart[mInd][i]-time);
+        fptDistribution[i].push_back(locStart[mInd][i]-time);
     }
 }
 
@@ -242,11 +273,11 @@ void dmrtalg2::getMFPTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vec
             {
                 while((*vec)[i][mDataColumn]>mRadii[mInd] && (int)mInd < mVecLength-1)
                 {
-                    for (int j=0;j< int(mInd);j++)
+                    /*for (int j=0;j< int(mInd);j++)
                     {
                         // update forward dmrts for given Qf at mInd
                         updateDMRTatQf(j,dmrt,counts ,upts,(*vec)[i][0]);
-                    }
+                    }*/
                     mInd++;
                 }
                 if (mInd == mVecLength-1)
@@ -291,11 +322,11 @@ void dmrtalg2::getRTTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vect
             {
                 while((*vec)[i][mDataColumn]>mRadii[mInd] && (int)mInd < mVecLength)
                 {
-                    for (int j=0;j< int(mInd);j++)
+                    /*for (int j=0;j< int(mInd);j++)
                     {
                         // update forward dmrts for given Qf at mInd
                         updateDMRTatQf(j,dmrt,counts ,upts,(*vec)[i][0]);
-                    }
+                    }*/
                     mInd++;
                 }
                 if (mInd == mVecLength)
@@ -308,11 +339,11 @@ void dmrtalg2::getRTTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vect
                 while((*vec)[i][mDataColumn]<mRadii[mInd-1] && mInd > 0)
                 {
                     mInd--;
-                    for (int j=0;j< int(mInd);j++)
+                    /*for (int j=0;j< int(mInd);j++)
                     {
                         // update retrun dmrts for given Qf at mInd
                         updateDMRTatQf(j,dmrt,counts ,upts,(*vec)[i][0]);
-                    }
+                    }*/
                 }
                 if (mInd == 0)
                 {

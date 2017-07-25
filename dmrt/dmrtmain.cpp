@@ -11,21 +11,54 @@ using namespace std;
 
 dmrtMain::dmrtMain(const char *mode, bool verb)
 {
-    this->mVerb=verb;
-    this->mMode=mode;
+    bRt=false;
+    bMfpt=false;
+    bCftp=false;
+    bTftp=false;
+    bRate=false;
+    bBins=false;
+    bCross=false;
+    bFull=false;
+    bVerb=verb;
+    mMode=mode;
+    decodeMode();
+    cout<< "initialized " << endl;
 }
 
-void dmrtMain::initLocalVectors(const double start, const double interval, const double end, const int dataColumn)
+void dmrtMain::decodeMode()
+{
+    if (strncmp(mMode,"rt",2)==0){bRt=true;}
+    else if (strncmp(mMode,"mfpt",4)==0){bMfpt=true;}
+    else if (strncmp(mMode,"cftp",4)==0){bCftp=true;}
+    else if (strncmp(mMode,"tftp",4)==0){bTftp=true;}
+    else if (strncmp(mMode,"rate",4)==0){bRate=true;}
+
+    if (strncmp(mMode+4,"bins",4)==0 || strncmp(mMode+2,"bins",4)==0){this->bBins=true;}
+    else if (strncmp(mMode+4,"cross",5)==0 || strncmp(mMode+2,"cross",5)==0){this->bCross=true;}
+    else if (strncmp(mMode+4,"full",4)==0){bFull=true;}
+}
+
+void dmrtMain::initLocalVectors(const double start, const double interval, const double end, const int dataColumn,vector< vector<vector<double> > >* finalDist)
 {
 
-  this->eval = dmrtalg2(this->mMode,this->mVerb,end,start,interval, dataColumn);
+  this->eval = dmrtalg2(this->mMode,this->bVerb,end,start,interval, dataColumn);
+  (*finalDist) = vector<vector<vector<double> > > (eval.getVecLength(),vector<vector<double>>(eval.getVecLength(),vector<double>(0)));
+  eval.mfptDistribution = finalDist;
+  eval.initializeLocalVectors();
+}
+
+void dmrtMain::initLocalVectors(const vector <double> &radii, const int dataColumn,vector< vector<vector<double> > >* finalDist)
+{
+  this->eval = dmrtalg2(this->mMode,this->bVerb,radii, dataColumn);
+  (*finalDist) = vector<vector<vector<double> > > (eval.getVecLength(),vector<vector<double>>(eval.getVecLength(),vector<double>(0)));
+  eval.mfptDistribution = finalDist;
   eval.initializeLocalVectors();
 }
 
 void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts, const char *input, const char *output, const double start, const double interval, const double end, const int dataColumn)
 {
 
-    if(this->mVerb){ cout << "Starting in" << input << endl;}
+    if(this->bVerb){ cout << "Starting in" << input << endl;}
 
     ifstream myfile;
     myfile.open(input);
@@ -36,7 +69,7 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
     }
     else
     {
-        if(this->mVerb){ cout << "Opened input:" << input << endl;}
+        if(this->bVerb){ cout << "Opened input:" << input << endl;}
     }
     ofstream outfile;
     outfile.open(output);
@@ -47,11 +80,11 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
     }
     else
     {
-        if(this->mVerb){ cout << "Opened ouput:" << output << endl;}
+        if(this->bVerb){ cout << "Opened ouput:" << output << endl;}
     }
 
-    dmrtReader reader = dmrtReader(&myfile,this->mVerb);
-    dmrtalg2 eval = dmrtalg2(this->mMode,this->mVerb,end,start,interval, dataColumn);
+    dmrtReader reader = dmrtReader(&myfile,this->bVerb);
+    dmrtalg2 eval = dmrtalg2(this->mMode,this->bVerb,end,start,interval, dataColumn);
     int vecLength = eval.getVecLength();
 
     // The final vectors get an extra row to save the radii in, in BINS mode the last column will be empty
@@ -81,7 +114,7 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
             cout << "Reached end of file in this run" << endl;
             success = false;
         }
-        if (mVerb){cout << "Read part "<< part << " of file. Evaluating..." << endl;}
+        if (bVerb){cout << "Read part "<< part << " of file. Evaluating..." << endl;}
         if (strncmp(this->mMode,"rt",2)==0)
         {
             if (strncmp(this->mMode+2,"bins",4)==0)
@@ -123,7 +156,7 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
     }
     cout << "run complete!"<< endl;
 
-    if(this->mVerb){cout << "Finished calculation!" << endl;}
+    if(this->bVerb){cout << "Finished calculation!" << endl;}
     if ((*finalDmrts).size()== 0)
     {
         cout << "ERROR algorithm did not produce results!" << endl;
@@ -149,9 +182,15 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
     myfile.close();
 }
 
-void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts,const vector< vector<double> >* vec, const double start, const double interval, const double end, const int dataColumn)
+void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts,vector< vector<vector<double> > >* finalDist, const vector< vector<double> >* vec, const double start, const double interval, const double end, const int dataColumn)
 {
-        initLocalVectors(start, interval, end, dataColumn);
+        initLocalVectors(start, interval, end, dataColumn,finalDist);
+        executeFly_continue(finalDmrts,finalCounts,finalUpts,vec);
+}
+
+void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts,vector< vector<vector<double> > >* finalDist, const vector< vector<double> >* vec, const vector<double> radii, const int dataColumn)
+{
+        initLocalVectors(radii,dataColumn,finalDist);
         executeFly_continue(finalDmrts,finalCounts,finalUpts,vec);
 }
 
@@ -181,75 +220,75 @@ void dmrtMain::executeFly_continue(vector< vector<double> >* finalDmrts, vector<
         part++;
         if (!vec || vec->size()!= MAXDOUBLEVEC)
         {
-            if(mVerb)
+            if(bVerb)
             {
                 cout << "Vecsize: " << vec->size()<< endl;
                 cout << "Reached end of file in this run" << endl;
             }
             success = false;
         }
-        if (mVerb){cout << "Read part "<< part << " of file. Evaluating..." << endl;}
-        if (strncmp(this->mMode,"rt",2)==0)
+        if (bVerb){cout << "Read part "<< part << " of file. Evaluating..." << endl;}
+        if (bRt==true)
         {
-            if (strncmp(this->mMode+2,"bins",4)==0)
+            if (bBins==true)
             {
                 eval.getRTTfrom2DVectorBins((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
-            else if (strncmp(this->mMode+2,"cross",5)==0)
+            else if (bCross==true)
             {
                 eval.getRTTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
         }
-        else if (strncmp(this->mMode,"mftp",4)==0)
+        else if (bMfpt==true)
         {
-            if (strncmp(this->mMode+4,"bins",4)==0)
+            if (bBins==true)
             {
                 eval.getMFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
-            else if (strncmp(this->mMode+4,"cross",5)==0)
+            else if (bCross==true)
             {
                 eval.getMFPTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
         }
-        else if (strncmp(this->mMode,"cftp",4)==0)
+        else if (bCftp==true)
         {
-            if (strncmp(this->mMode+4,"bins",4)==0)
+            if (bBins==true)
             {
                 cout << "Warning! Mode not implemented in current version!" << endl;
             }
-            else if (strncmp(this->mMode+4,"cross",5)==0)
+            else if (bCross==true)
             {
                 cout << "Initial config: "<< vecLength << endl;
                 eval.getFPTfrom2DVectorCross((*finalCounts),vec);
             }
         }
-        else if (strncmp(this->mMode,"rate",4)==0)
+        else if (bRate==true)
         {
-            if (strncmp(this->mMode+4,"bins",4)==0)
+            if (bBins==true)
             {
                 cout << "Warning! Mode not implemented in current version!" << endl;
             }
-            else if (strncmp(this->mMode+4,"cross",5)==0)
+            else if (bCross==true)
             {
                 cout << "Initial config: "<< vecLength << endl;
                 eval.getRatefrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
-            else if (strncmp(this->mMode+4,"full",5)==0)
+            else if (bFull==true)
             {
                 cout << "Initial config: "<< vecLength << endl;
                 eval.getRateFullfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
         }
-        else if (strncmp(this->mMode,"tftp",4)==0)
+        else if (bTftp==true)
         {
-            if (strncmp(this->mMode+4,"bins",4)==0)
+            if (bBins==true)
             {
                 cout << "Initial config: "<< vecLength << endl;
                 //eval.getFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),vec);
                 eval.getTFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),vec);
                 cout << (*finalDmrts)[0][0] << " " <<  (*finalDmrts)[10][0] << " " << (*finalDmrts)[20][0] << endl;
             }
-            else if (strncmp(this->mMode+4,"cross",5)==0)
+            else if (bCross==true)
             {
                 cout << "Initial config: "<< vecLength << endl;
                 cout << "TFTPCROSS not implemented (in fact incorrect!): Calling TFTPBINS"<< endl;
@@ -260,7 +299,7 @@ void dmrtMain::executeFly_continue(vector< vector<double> >* finalDmrts, vector<
         }
     }
 
-    if(this->mVerb){cout << "Finished calculation!" << endl;}
+    if(this->bVerb){cout << "Finished calculation!" << endl;}
     if ((*finalDmrts).size()== 0)
     {
         cout << "ERROR algorithm did not produce results!" << endl;

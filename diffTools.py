@@ -10,9 +10,100 @@ from os.path import isfile, join
 
 import pydmrt as pydmrt_module
 
-def pydmrt(inputVec, start=-2.0, interval=0.1, end=2.0, mode="rtcross", verb=False):
-    dmrtTms, dmrtCts, dmrtUpts = pydmrt_module.dmrtInp(inputVec, start, interval, end, mode,verb)
-    return dmrtTms, dmrtCts, dmrtUpts
+
+
+class DiffTools():
+
+    def __init__(self,mode=None,rtt=True,mfpt=False,tftp=False,cross=True,bins=False,dist=False):
+        if mode is not None:
+            self.decodeMode(mode)
+        else:
+            self.rtt=rtt
+            self.mfpt=mfpt
+            self.tftp=tftp
+            self.bins=bins
+            self.cross=cross
+            self.dist=dist
+            self.encodeMode()
+        return
+
+    def calcTimes(self,dmrtTms,dmrtCts,rtt=False):
+        tms = np.array(dmrtTms)[:-1,:]
+        cts = np.array(dmrtCts)
+        dists = np.array(dmrtTms)[-1,:]
+        tms = tms/cts
+        if rtt:    
+            tms = tms.T + tms
+            tms = +np.tril(tms)-np.triu(tms)
+        return tms,cts,dists
+
+    def calcPTPR(self,dmrtTms,dmrtCts):
+        normal = np.array(dmrtTms)[:-1,0]
+        pxtp= np.array(dmrtCts)[:,0]
+        dists = np.array(dmrtTms)[-1,:]
+        total = normal + pxtp
+        pxtp = pxtp/total
+        return pxtp,total,dists
+
+    def compute(self,data,start=-2.0, interval=0.1, end=2.0, mode=None, verb=False, radii=None):
+        if mode is not None:
+            self.decodeMode(mode)
+        if radii is not None:
+            dmrtTms, dmrtCts, dmrtUpts, dmrtDist = pydmrt_module.dmrtInpRadii(self.mode,verb,data,radii)
+        else:
+            dmrtTms, dmrtCts, dmrtUpts, dmrtDist = pydmrt_module.dmrtInp(data, start, interval, end,self.mode,verb)
+        if self.rtt or self.mfpt:
+            ret1,ret2,ret3 = self.calcTimes(dmrtTms,dmrtCts,rtt=self.rtt)
+        elif self.tftp:
+            ret1,ret2,ret3 = self.calcPTPR(dmrtTms,dmrtCts)
+        if self.dist:
+            return ret1,ret2,ret3,dmrtDist
+        else:
+            return ret1,ret2,ret3
+
+    def decodeMode(self,mode):
+        if mode.startswith("rt"):
+            self.rtt,self.mfpt,self.tftp=True,False,False
+        elif mode.startswith("mfpt"):
+            self.rtt,self.mfpt,self.tftp=False,True,False
+        elif mode.startswith("tftp"):
+            self.rtt,self.mfpt,self.tftp=False,False,True
+        if "bins" in mode:
+            self.cross,self.bins=False,True
+        elif "cross" in mode:
+            self.cross,self.bins=True,False
+        if "dist" in mode:
+            self.dist=True
+        else:
+            self.dist=False
+        self.mode=mode
+
+    def encodeMode(self):
+        if self.rtt:
+            mode="rt"
+        elif self.mfpt:
+            mode="mfpt"
+        elif self.tftp:
+            mode="tftp"
+        if self.cross:
+            mode=mode+"cross"
+        elif self.bins:
+            mode=mode+"bins"
+        if self.dist:
+            mode=mode+"dist"
+        self.mode=mode
+
+    # DEPRECATED
+    def pydmrt(self, inputVec, start=-2.0, interval=0.1, end=2.0, mode="rtcross", verb=False,radii=None):
+        print("WARNING: this wrapper is deprecated! Use DiffTools.compute(args) instead.")
+        if radii is not None:
+            dmrtTms, dmrtCts, dmrtUpts, dmrtDist = pydmrt_module.dmrtInpRadii(self.mode,verb,inputVec,radii)
+        else:
+            dmrtTms, dmrtCts, dmrtUpts, dmrtDist = pydmrt_module.dmrtInp(inputVec, start, interval, end,self.mode,verb)
+        return dmrtTms, dmrtCts, dmrtUpts, dmrtDist
+
+
+
 
 def loadEvalTxt(folder,filestring,mode,optionalstring="",verbose=0, recompute = False, rtCorrect=True):
 	finalTms=[]

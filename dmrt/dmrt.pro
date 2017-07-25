@@ -13,8 +13,7 @@ INCLUDEPATH +=  /home/rottee/Python/include/python2.7
 
 LIBS += -L/home/rottee/Python/lib/python2.7 -lpython2.7  -lgomp
 
-SOURCES += dmrtalg.cpp \
-    dmrtreader.cpp \
+SOURCES += dmrtreader.cpp \
 #    dmrtpy.cpp \
 #    main.cpp \
     dmrtmain.cpp \
@@ -26,7 +25,6 @@ include(deployment.pri)
 qtcAddDeployment()
 
 HEADERS += Python.h\
-    dmrtalg.h \
     dmrtreader.h \
 #    dmrtpy.h \
     dmrtmain.h \
