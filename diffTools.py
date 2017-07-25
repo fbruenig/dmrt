@@ -35,7 +35,7 @@ class DiffTools():
         if rtt:    
             tms = tms.T + tms
             tms = +np.tril(tms)-np.triu(tms)
-        return tms,cts,dists
+        return dists,tms,cts
 
     def calcPTPR(self,dmrtTms,dmrtCts):
         normal = np.array(dmrtTms)[:-1,0]
@@ -43,7 +43,7 @@ class DiffTools():
         dists = np.array(dmrtTms)[-1,:]
         total = normal + pxtp
         pxtp = pxtp/total
-        return pxtp,total,dists
+        return dists,pxtp,total
 
     def compute(self,data,start=-2.0, interval=0.1, end=2.0, mode=None, verb=False, radii=None):
         if mode is not None:
@@ -55,11 +55,11 @@ class DiffTools():
         if self.rtt or self.mfpt:
             ret1,ret2,ret3 = self.calcTimes(dmrtTms,dmrtCts,rtt=self.rtt)
         elif self.tftp:
-            ret1,ret2,ret3 = self.calcPTPR(dmrtTms,dmrtCts)
+            return self.calcPTPR(dmrtTms,dmrtCts)
         if self.dist:
-            return ret1,ret2,ret3,dmrtDist
+            return ret1,ret2,ret3,np.array(dmrtUpts),dmrtDist
         else:
-            return ret1,ret2,ret3
+            return ret1,ret2,ret3,np.array(dmrtUpts)
 
     def decodeMode(self,mode):
         if mode.startswith("rt"):

@@ -32,7 +32,7 @@ diffUpts = np.sum(np.sum(dmrtUpts-refUpts))
 #  raise(Exception("WARNING: Differences to reference tables: tms %f, cts %i, upts %i "%(diffTms, diffCts, diffUpts)))
 
 
-tms,cts,dists = dt.calcTimes(dmrtTms,dmrtCts,True)
+dists,tms,cts = dt.calcTimes(dmrtTms,dmrtCts,True)
 plotTimes(dists,tms)
 
 hist,bins = np.histogram(testtraj[:,1],bins=dists)
@@ -50,15 +50,14 @@ plt.show()
 
 print("Short test: radii mode")
 radii =  [-2,-1.5,0.0,1.5,2]
-tms,cts,dists,rtDist = dt.compute(testtraj,radii=radii, mode="rtcrossdist",verb=True)
+dists,tms,cts,upts,rtDist = dt.compute(testtraj,radii=radii, mode="rtcrossdist",verb=True)
 print(tms)
-
-hist,bins = np.histogram(np.array(rtDist[-2][1])+np.array(rtDist[1][-2]))
+hist,bins = np.histogram(np.concatenate([np.array(rtDist[-2][1]),np.array(rtDist[1][-2])]))
 plt.plot(bins[:-1],hist)
 title("MFPT distribution of doublewell barrier hopping.")
 plt.show()
 
 
 print("Short test: radii and bins mode")
-tms,cts,dists = dt.compute(testtraj,radii=radii, mode="rtbins",verb=True)
+dists,tms,cts,upts = dt.compute(testtraj,radii=radii, mode="rtbins",verb=True)
 print(tms)

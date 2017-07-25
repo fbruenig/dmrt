@@ -111,10 +111,10 @@ void dmrtalg2::findStart2(bool& started, const double d)
 
 void dmrtalg2::updateDMRTatQf(const int i, vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time)
 {
-    if (i==mInd)
+    /*if (i==mInd)
     {
         locCounts[i][mInd] =0;
-    }
+    }*/
     if (locCounts[i][mInd]!=0)
     {
         double relFin   = time-locStart[i][mInd];
