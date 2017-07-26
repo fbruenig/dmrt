@@ -13,6 +13,7 @@ public:
     dmrtMain(const char *mode, bool verb);
 
     void decodeMode();
+    void initLocalVectors(const double start, const double interval, const double end, const int dataColumn = 1);
     void initLocalVectors(const double start, const double interval, const double end, const int dataColumn, vector<vector<vector<double> > > *finalDist);
     void initLocalVectors(const vector<double> &radii, const int dataColumn, vector<vector<vector<double> > > *finalDist);
 

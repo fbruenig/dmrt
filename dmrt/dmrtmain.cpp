@@ -38,6 +38,13 @@ void dmrtMain::decodeMode()
     else if (strncmp(mMode+4,"full",4)==0){bFull=true;}
 }
 
+// Warning this function will not initialize dmrtalg2.mfptDistribution
+void dmrtMain::initLocalVectors(const double start, const double interval, const double end, const int dataColumn)
+{
+    this->eval = dmrtalg2(this->mMode,this->bVerb,end,start,interval, dataColumn);
+    eval.initializeLocalVectors();
+}
+
 void dmrtMain::initLocalVectors(const double start, const double interval, const double end, const int dataColumn,vector< vector<vector<double> > >* finalDist)
 {
 
