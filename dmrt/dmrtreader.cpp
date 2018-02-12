@@ -102,7 +102,7 @@ vector<vector<double> >* dmrtReader::read2DvectorSpace()
         string column = "";
         vector<double> col = vector<double>(2);
         unsigned int index = 0;
-        while(getline(line_ss,column,'\ '))
+        while(getline(line_ss,column,' '))
         {
             if(!column.empty() && index<2)
             {
@@ -138,7 +138,7 @@ vector<vector<double> >* dmrtReader::read2DvectorSpace(const double rmin, const 
         string column = "";
         vector<double> col = vector<double>(2);
         unsigned int index = 0;
-        while(getline(line_ss,column,'\ '))
+        while(getline(line_ss,column,' '))
         {
             if(!column.empty() && index<2)
             {
@@ -175,7 +175,7 @@ vector<vector<double> >* dmrtReader::read2DvectorSpace(const vector<int> columns
     int numOfColsInFile=0;
     stringstream line_ss(line);
     string column = "";
-    while(getline(line_ss,column,'\ '))
+    while(getline(line_ss,column,' '))
     {
         numOfColsInFile++;
     }
@@ -194,7 +194,7 @@ vector<vector<double> >* dmrtReader::read2DvectorSpace(const vector<int> columns
         vector<double> col = vector<double>(numOfColumns);
         unsigned int index = 0;
         unsigned int colInd = 0;
-        while(getline(line_ss,column,'\ '))
+        while(getline(line_ss,column,' '))
         {
             if(use[index]==true)
             {
@@ -211,6 +211,7 @@ vector<vector<double> >* dmrtReader::read2DvectorSpace(const vector<int> columns
     return this->mData;
 }
 
+
 vector<vector<double> >* dmrtReader::read2DvectorSpace4gb(const double rmin, const double rmax)
 {
     string line = string("");
@@ -224,7 +225,7 @@ vector<vector<double> >* dmrtReader::read2DvectorSpace4gb(const double rmin, con
         string column = "";
         vector<double> col = vector<double>(2);
         unsigned int index = 0;
-        while(getline(line_ss,column,'\ '))
+        while(getline(line_ss,column,' '))
         {
             if(!column.empty() && index<2)
             {
