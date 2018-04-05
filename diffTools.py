@@ -31,10 +31,11 @@ class DiffTools():
         tms = np.array(dmrtTms)[:-1,:]
         cts = np.array(dmrtCts)
         dists = np.array(dmrtTms)[-1,:]
-        tms = tms/cts
-        if rtt:    
+        if rtt:
             tms = tms.T + tms
+            cts = cts.T + cts
             tms = +np.tril(tms)-np.triu(tms)
+        tms = tms/cts
         return dists,tms,cts
 
     def calcPTPR(self,dmrtTms,dmrtCts):

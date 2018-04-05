@@ -55,6 +55,8 @@ public:
 //    void updateVectorsMFPTCont(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time);
     void updateDMRTatQf(const int i, vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time);
     void updateQfatQ(const int i, const double time);
+ 
+    //Deprecated!
     void updateDMRTatQfWithDistribution(const int i, vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time);
     void updateQfatQWithDistribution(const int i, const double time);
 
@@ -90,7 +92,7 @@ private:
     vector<vector<double> > locDmrt;
     vector<vector<double> > locStart;
     vector<vector<int> >    locCounts;
-    vector<vector<double> > fptDistribution;
+    vector<vector<vector<double> > > fptDistribution;
 
     vector<double> mRadii;
     int mVecLength ;

@@ -71,6 +71,7 @@ void dmrtalg2::initializeLocalVectors()
     locDmrt = vector<vector<double> >(mVecLength,vector<double>(mVecLength,0.0));
     locStart = vector<vector<double> >(mVecLength,vector<double>(mVecLength,0.0));
     locCounts = vector<vector<int> >(mVecLength,vector<int>(mVecLength,0));
+    fptDistribution = vector<vector<vector<double> > > (mVecLength,vector<vector<double> >(mVecLength,vector<double>(0)));
 }
 
 double dmrtalg2::interpolate(const double t1, const double t2, const double r1, const double r2)
@@ -125,13 +126,19 @@ void dmrtalg2::updateDMRTatQf(const int i, vector<vector<double> > &dmrt, vector
         upts[i][mInd]++;
         if (this->recordMFPTdistribution==true && mfpt>0.0)
         {
+            (*mfptDistribution)[i][mInd].push_back(relFin);
+            for(int j=0; j<fptDistribution[i][mInd].size(); j++)
+            {
+                (*mfptDistribution)[i][mInd].push_back(relFin+fptDistribution[i][mInd][j]);
+            }
+	        fptDistribution[i][mInd]= vector<double>(0);
             //cout << "MFPT " << mfpt << " " << i << " " << mInd << endl;
-            (*mfptDistribution)[i][mInd].push_back(mfpt);
+            //(*mfptDistribution)[i][mInd].push_back(mfpt);
         }
     }
 }
 
-
+//DEPRECATED
 void dmrtalg2::updateDMRTatQfWithDistribution(const int i, vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time)
 {
     if (locCounts[i][mInd]!=0)
@@ -142,10 +149,10 @@ void dmrtalg2::updateDMRTatQfWithDistribution(const int i, vector<vector<double>
         locCounts[i][mInd]=0;
         upts[i][mInd]++;
         // shitty implementation here!!
-        for(int j=0; j<fptDistribution[i].size(); j++)
+        /*for(int j=0; j<fptDistribution[i].size(); j++)
         {
             upts[i].push_back(fptDistribution[i][j]);
-        }
+        }*/
     }
 }
 
@@ -163,10 +170,14 @@ void dmrtalg2::updateQfatQ(const int i,const double time)
     {
         locDmrt[mInd][i]+=  locStart[mInd][i]-time;
         locCounts[mInd][i]++;
+        if (this->recordMFPTdistribution==true)
+        {
+ 	    fptDistribution[mInd][i].push_back(locStart[mInd][i]-time);
+	}
     }
 }
 
-
+//DEPRECATED
 void dmrtalg2::updateQfatQWithDistribution(const int i,const double time)
 {
     if (locCounts[mInd][i]==0)
@@ -179,7 +190,7 @@ void dmrtalg2::updateQfatQWithDistribution(const int i,const double time)
     {
         locDmrt[mInd][i]+=  locStart[mInd][i]-time;
         locCounts[mInd][i]++;
-        fptDistribution[i].push_back(locStart[mInd][i]-time);
+        //fptDistribution[i].push_back(locStart[mInd][i]-time);
     }
 }
 
@@ -533,6 +544,7 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
     {
         if((*vec)[i][0]<(*vec)[i-1][0])
         {
+            //cout << "Restarting!" << endl;
             initializeLocalVectors();
             started = false;
         }
