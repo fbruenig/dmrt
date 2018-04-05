@@ -35,7 +35,7 @@ class DiffTools():
             tms = tms.T + tms
             cts = cts.T + cts
             tms = +np.tril(tms)-np.triu(tms)
-        tms = tms/cts
+        tms = tms/cts*2 #make them RTT again
         return dists,tms,cts
 
     def calcPTPR(self,dmrtTms,dmrtCts):
