@@ -1,11 +1,12 @@
-#include "Python.h"
-#include "numpy/arrayobject.h"
-#include "dmrtmain.h"
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+
+#include <python2.7/Python.h>
+#include <numpy/arrayobject.h>
 #include <iostream>
 #include <vector>
 #include <string.h>
 
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#include "dmrtmain.h"
 
 using namespace std;
 
@@ -157,7 +158,7 @@ static PyObject* py_dmrtMainInp(PyObject* self, PyObject* args)
         if (!PyArg_ParseTuple(args, "Offfsh",&inputVec1, &start, &interval,&end,&mode,&verb)){return NULL;}
 
         /* Interpret the input objects as numpy arrays. */
-        PyObject *input1 = PyArray_FROM_OTF(inputVec1, NPY_DOUBLE, NPY_IN_ARRAY);
+        PyArrayObject *input1 = reinterpret_cast<PyArrayObject*>(PyArray_FROM_OTF(inputVec1, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY));
 
         /* If that didn't work, throw an exception. */
         if (input1 == NULL) {
@@ -201,22 +202,22 @@ static PyObject* py_dmrtMainInpRadii(PyObject* self, PyObject* args)
 {
         PyObject *inputVec1=NULL;
         PyObject *inputRadii=NULL;
-        PyObject* input1 = NULL;
-        PyObject* radii = NULL;
+        PyArrayObject* input1 = NULL;
+        PyArrayObject* radii = NULL;
         
 	bool verb = false;
         const char *mode = NULL;
         
         if (!PyArg_ParseTuple(args, "shOO",&mode,&verb,&inputVec1, &inputRadii)){return NULL;}
 
-        input1 = PyArray_FROM_OTF(inputVec1, NPY_DOUBLE, NPY_IN_ARRAY);
+        input1 = reinterpret_cast<PyArrayObject*>(PyArray_FROM_OTF(inputVec1, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY));
         
 	if (input1 == NULL) {
             Py_XDECREF(input1);
             return NULL;
         }
 
-  	radii  = PyArray_FROM_OTF(inputRadii, NPY_DOUBLE, NPY_IN_ARRAY);
+        radii = reinterpret_cast<PyArrayObject*>(PyArray_FROM_OTF(inputRadii, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY));
        	if (radii == NULL) {
          	Py_XDECREF(radii);
             	return NULL;
