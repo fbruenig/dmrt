@@ -33,6 +33,12 @@ dmrtalg2::dmrtalg2()
 {
 }
 
+~dmrtalg2
+{
+    delete locDmrt, delete locStart, delete locCounts, delete fptDistribution;
+}
+
+
 dmrtalg2::dmrtalg2(const char *mode, bool verb, const double escapeD, const double minD, const double dR, const int dataColumn)
 {
     mMode=mode;

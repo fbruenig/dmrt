@@ -81,7 +81,7 @@ PyObject* convertCArraysToPythonLists(const vector<vector<double> >* tes,const v
 	else
 	{
 		return NULL;
-	}	
+	}
 }
 
 static PyObject* py_dmrtMain(PyObject* self, PyObject* args)
@@ -140,6 +140,7 @@ static PyObject* py_dmrtMain(PyObject* self, PyObject* args)
                 PyList_SetItem(TwoDListCounts,i,Py_BuildValue("O",PList4));
             }
         }
+        delete tes; delete count; delete upts;
         return Py_BuildValue("OO",TwoDList,TwoDListCounts);
 }
 
@@ -189,7 +190,7 @@ static PyObject* py_dmrtMainInp(PyObject* self, PyObject* args)
 
         /* Clean up. */
         Py_DECREF(input1);
-	
+
 	PyObject* result =  convertCArraysToPythonLists(tes, count, upts, dist, mode);
 	delete tes; delete count; delete upts; delete dist;
 	return result;
@@ -202,23 +203,24 @@ static PyObject* py_dmrtMainInpRadii(PyObject* self, PyObject* args)
         PyObject *inputRadii=NULL;
         PyObject* input1 = NULL;
         PyObject* radii = NULL;
-        
-	bool verb = false;
+
+        bool verb = false;
         const char *mode = NULL;
-        
+
         if (!PyArg_ParseTuple(args, "shOO",&mode,&verb,&inputVec1, &inputRadii)){return NULL;}
+        if (verb==1){cout << "Entering in " << mode << " mode" << endl;}
 
         input1 = PyArray_FROM_OTF(inputVec1, NPY_DOUBLE, NPY_IN_ARRAY);
-        
-	if (input1 == NULL) {
+
+        if (input1 == NULL) {
             Py_XDECREF(input1);
             return NULL;
         }
 
-  	radii  = PyArray_FROM_OTF(inputRadii, NPY_DOUBLE, NPY_IN_ARRAY);
-       	if (radii == NULL) {
-         	Py_XDECREF(radii);
-            	return NULL;
+        radii  = PyArray_FROM_OTF(inputRadii, NPY_DOUBLE, NPY_IN_ARRAY);
+        if (radii == NULL) {
+            Py_XDECREF(radii);
+            return NULL;
         }
 
         /* How many data points are there? */
@@ -246,7 +248,7 @@ static PyObject* py_dmrtMainInpRadii(PyObject* self, PyObject* args)
        	{
            	rad[i] = *(rin+i);
         }
-        
+
         dmrtMain prog = dmrtMain(mode,verb);
         if (verb==1){cout << "Entering in " << mode << " mode" << endl;}
 
@@ -255,14 +257,14 @@ static PyObject* py_dmrtMainInpRadii(PyObject* self, PyObject* args)
         vector<vector<int> >* upts = new vector< vector<int> >;
         vector<vector<vector<double> >>* dist = new vector<vector< vector<double> > >;
         prog.executeFly(tes,count,upts,dist,&data,rad);
-        
+
         /* Clean up. */
         Py_XDECREF(input1);
         Py_XDECREF(radii);
-	
+
         PyObject* result =  convertCArraysToPythonLists(tes, count, upts, dist, mode);
-	delete tes; delete count; delete upts; delete dist;
-	return result;
+        delete tes; delete count; delete upts; delete dist;
+        return result;
 }
 
 /*
@@ -274,7 +276,7 @@ static PyObject* py_dmrtDEBUG(PyObject* self, PyObject* args)
         PyObject* radii = NULL;
 	bool verb = false;
         const char *mode = NULL;
-        
+
        if (!PyArg_ParseTuple(args, "OO", &inputVec1, &inputRadii)){return NULL;}
 
         input1 = PyArray_FROM_OTF(inputVec1, NPY_DOUBLE, NPY_IN_ARRAY);
@@ -300,9 +302,9 @@ static PyObject* py_dmrtDEBUG(PyObject* self, PyObject* args)
             //cout << "parsed: " << *(in+i*2) << " " << *(in+i*2+1) << endl;
             data[i].assign(in+i*2,in+i*2+2);
         }
-        
+
         int rN = (int)PyArray_DIM(radii, 0);
-        
+
         double *rin    = (double*)PyArray_DATA(radii);
 
         vector<double> rad = vector<double>(rN);
@@ -311,18 +313,18 @@ static PyObject* py_dmrtDEBUG(PyObject* self, PyObject* args)
        	{
            	rad[i] = *(rin+i);
         }
-        
-        
+
+
         dmrtMain prog = dmrtMain("rtcross",verb);
-        
+
         vector<vector<double> >* tes = new vector< vector<double> >;
         vector<vector<int> >* count = new vector< vector<int> >;
         vector<vector<int> >* upts = new vector< vector<int> >;
         vector<vector<vector<double> >>* dist = new vector<vector< vector<double> > >;
         prog.executeFly(tes,count,upts,dist,&data,rad);
-        
+
 	cout << tes->size() << endl;
-       
+
         Py_XDECREF(input1);
         Py_XDECREF(radii);
 	return convertCArraysToPythonLists(tes, count, upts, dist, "rtcross");
