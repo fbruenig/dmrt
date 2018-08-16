@@ -50,7 +50,7 @@ plt.show()
 
 
 print("Short test: radii mode")
-radii =  [-2,-1.5,0.0,1.5,2]
+radii = [-2,-1.5,0.0,1.5,2]
 dists,tms,cts,upts,rtDist = dt.compute(testtraj,radii=radii, mode="rtcrossdist",verb=True)
 print(tms)
 hist,bins = np.histogram(np.concatenate([np.array(rtDist[-2][1]),np.array(rtDist[1][-2])]))

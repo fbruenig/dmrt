@@ -33,6 +33,11 @@ dmrtalg2::dmrtalg2()
 {
 }
 
+dmrtalg2::~dmrtalg2()
+{
+}
+
+
 dmrtalg2::dmrtalg2(const char *mode, bool verb, const double escapeD, const double minD, const double dR, const int dataColumn)
 {
     mMode=mode;

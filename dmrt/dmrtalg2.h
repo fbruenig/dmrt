@@ -9,6 +9,7 @@ class dmrtalg2
 {
 public:
     dmrtalg2();
+    ~dmrtalg2();
     dmrtalg2(const char *mode, bool verb, const double escapeD, const double minD, const double dR, const int dataColumn = 1);
     dmrtalg2(const char *mode, bool verb, const vector<double>& radii, const int dataColumn = 1);
 
