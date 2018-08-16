@@ -28,9 +28,10 @@ refUpts = np.loadtxt("./reference_Upts.txt")
 diffTms = np.sum(np.sum(dmrtTms-refTms))
 diffCts = np.sum(np.sum(dmrtCts-refCts))
 diffUpts = np.sum(np.sum(dmrtUpts-refUpts))
-#if (diffTms + float(diffCts) + float(diffUpts) != 0.0):
-#  raise(Exception("WARNING: Differences to reference tables: tms %f, cts %i, upts %i "%(diffTms, diffCts, diffUpts)))
-
+if (diffTms + float(diffCts) + float(diffUpts) != 0.0):
+  print("WARNING: Differences to reference tables: tms %f, cts %i, upts %i "%(diffTms, diffCts, diffUpts))
+else:
+  print("Reference data is reproduced!")
 
 dists,tms,cts = dt.calcTimes(dmrtTms,dmrtCts,True)
 plotTimes(dists,tms)
