@@ -594,7 +594,6 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
 void dmrtalg2::getRatefrom2DVectorCross(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const vector<vector<double> > *vec)
 {
     bool started = false;
-    bool reached = false;
     double interTime =0.0;
     for(size_t i = 1; i<(*vec).size(); i++)
     {
@@ -682,7 +681,6 @@ void dmrtalg2::getRatefrom2DVectorCross(vector<vector<double> > &dmrt, vector<ve
 void dmrtalg2::getRateFullfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const vector<vector<double> > *vec)
 {
     bool started = false;
-    bool reached = false;
     double interTime =0.0;
     for(size_t i = 1; i<(*vec).size(); i++)
     {

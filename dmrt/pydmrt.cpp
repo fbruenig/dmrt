@@ -95,7 +95,6 @@ static PyObject* py_dmrtMain(PyObject* self, PyObject* args)
         float start;
         float interval;
         float end;
-        const char *name = "dmrtlib";
 
         if (!PyArg_ParseTuple(args, "ssfffsh", &infile, &outfile, &start, &interval,&end,&mode,&verb))
             return NULL;

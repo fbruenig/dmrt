@@ -3,12 +3,11 @@
 from diffTools import *
 import numpy as np
 import matplotlib.pyplot as plt
-from pylab import *
 
 def plotTimes(dists,tms):
     for i in range(0,tms.shape[0]-1):
       plt.plot(dists,tms[:,i])
-    title("RT times of overdamped doublewell Langevin sim.")
+    plt.title("RT times of overdamped doublewell Langevin sim.")
     plt.show()
 
 print("Starting pydmrt test")
@@ -45,7 +44,8 @@ final,ddists, ddmrt, diff = fullAnalysis(tms, cts, dists, rdf, rmin = -1.5 , rma
                 mfpt="rt",cross="cross", dim=1, verbose=True, smoothwidth=0.0)
 
 plt.plot(ddists,final)
-title("diffusivity profile of overdamped Langevin simulation")
+plt.plot(ddists, np.ones(ddists.shape),'--')
+plt.title("diffusivity profile of overdamped Langevin simulation")
 plt.show()
 
 
@@ -55,7 +55,7 @@ dists,tms,cts,upts,rtDist = dt.compute(testtraj,radii=radii, mode="rtcrossdist",
 print(tms)
 hist,bins = np.histogram(np.concatenate([np.array(rtDist[-2][1]),np.array(rtDist[1][-2])]))
 plt.plot(bins[:-1],hist)
-title("MFPT distribution of doublewell barrier hopping.")
+plt.title("MFPT distribution of doublewell barrier hopping.")
 plt.show()
 
 
