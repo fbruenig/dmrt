@@ -88,7 +88,6 @@ PyObject* convertCArraysToPythonLists(const vector<vector<double> >* tes,const v
                 for(size_t j = 0; j < veclength ; j++ )
                 {
                     PyList_SetItem(PList4,j, Py_BuildValue("i", (*count)[i][j]));
-                    //cout << (*count)[i][j] << endl;
                 }
                 PyList_SetItem(TwoDListCounts,i,PList4);
             }
@@ -100,7 +99,6 @@ PyObject* convertCArraysToPythonLists(const vector<vector<double> >* tes,const v
                 for(size_t j = 0; j < veclength ; j++ )
                 {
                     PyList_SetItem(PList5,j, Py_BuildValue("i", (*upts)[i][j]));
-                    //cout << (*count)[i][j] << endl;
                 }
                 PyList_SetItem(TwoDListUpts,i,PList5);
             }
