@@ -10,7 +10,8 @@
 
 using namespace std;
 
-PyObject* convertCArraysToPythonLists(const vector<vector<double> >* tes,const vector<vector<int> >* count,const vector<vector<int> >* upts,const vector<vector<vector<double> >>* dist,const char* mode)
+
+PyObject* parseCArraysToNumpyArrays(vector<vector<double> >* tes, vector<vector<int> >* count, vector<vector<int> >* upts,const vector<vector<vector<double> >>* dist,const char* mode)
 {
         PyObject * TwoDList =NULL;
         PyObject * TwoDListCounts =NULL;
@@ -20,45 +21,11 @@ PyObject* convertCArraysToPythonLists(const vector<vector<double> >* tes,const v
         if (strncmp(mode,"rt",2)==0 || strncmp(mode+1,"ftp",3)==0 || strncmp(mode+1,"fpt",3)==0)
         {
             size_t veclength = tes->size()-1;
-            TwoDList = PyList_New(veclength+1);
-            PyObject * PListIt = NULL;
-            PListIt = PyList_New(veclength);
-            for(size_t i = 0; i < veclength ; i++ )
-            {
-                PyObject * PList4 = NULL;
-                PList4 = PyList_New(veclength);
-                for(size_t j = 0; j < veclength ; j++ )
-                {
-                    PyList_SetItem(PList4,j, Py_BuildValue("f", (*tes)[i][j]));
-                }
-                PyList_SetItem(TwoDList,i,Py_BuildValue("O",PList4));
-                PyList_SetItem(PListIt,i,Py_BuildValue("f",(*tes)[veclength][i]));
-            }
-            PyList_SetItem(TwoDList,veclength,Py_BuildValue("O",PListIt));
-            TwoDListCounts = PyList_New(veclength);
-            for(size_t i = 0; i < veclength ; i++ )
-            {
-                PyObject * PList4 = NULL;
-                PList4 = PyList_New(veclength);
-                for(size_t j = 0; j < veclength ; j++ )
-                {
-                    PyList_SetItem(PList4,j, Py_BuildValue("i", (*count)[i][j]));
-                    //cout << (*count)[i][j] << endl;
-                }
-                PyList_SetItem(TwoDListCounts,i,Py_BuildValue("O",PList4));
-            }
-            TwoDListUpts = PyList_New(veclength);
-            for(size_t i = 0; i < veclength ; i++ )
-            {
-                PyObject * PList5 = NULL;
-                PList5 = PyList_New(veclength);
-                for(size_t j = 0; j < veclength ; j++ )
-                {
-                    PyList_SetItem(PList5,j, Py_BuildValue("i", (*upts)[i][j]));
-                    //cout << (*count)[i][j] << endl;
-                }
-                PyList_SetItem(TwoDListUpts,i,Py_BuildValue("O",PList5));
-            }
+            npy_intp tmsDims[2] = {veclength+1,veclength};
+            npy_intp countDims[2] = {veclength,veclength};
+            TwoDList = PyArray_SimpleNewFromData(2,tmsDims, NPY_DOUBLE, (double*)tes->data() );
+            TwoDListCounts = PyArray_SimpleNewFromData(2,countDims, NPY_INT, (double*)count->data() );
+            TwoDListUpts = PyArray_SimpleNewFromData(2,countDims, NPY_INT, (int*)upts->data() );
             ThreeDListDist = PyList_New(veclength);
             for(size_t i = 0; i < veclength ; i++ )
             {
@@ -82,6 +49,93 @@ PyObject* convertCArraysToPythonLists(const vector<vector<double> >* tes,const v
 	}
 	else
 	{
+		return NULL;
+	}
+}
+
+PyObject* convertCArraysToPythonLists(const vector<vector<double> >* tes,const vector<vector<int> >* count,const vector<vector<int> >* upts,const vector<vector<vector<double> >>* dist,const char* mode)
+{
+        PyObject * TwoDList =NULL;
+        PyObject * TwoDListCounts =NULL;
+        PyObject * TwoDListUpts =NULL;
+        PyObject * ThreeDListDist =NULL;
+
+        if (strncmp(mode,"rt",2)==0 || strncmp(mode+1,"ftp",3)==0)
+        {
+            size_t veclength = tes->size()-1;
+            TwoDList = PyList_New(veclength+1);
+            PyObject * PListIt = NULL;
+            PListIt = PyList_New(veclength);
+            for(size_t i = 0; i < veclength ; i++ )
+            {
+                PyObject * PList4 = NULL;
+                PList4 = PyList_New(veclength);
+                for(size_t j = 0; j < veclength ; j++ )
+                {
+                    PyList_SetItem(PList4,j, Py_BuildValue("f", (*tes)[i][j]));
+                }
+                PyList_SetItem(TwoDList,i,PList4);
+                PyList_SetItem(PListIt,i,Py_BuildValue("f",(*tes)[veclength][i]));
+            }
+            PyList_SetItem(TwoDList,veclength,PListIt);
+            
+
+            TwoDListCounts = PyList_New(veclength);
+            for(size_t i = 0; i < veclength ; i++ )
+            {
+                PyObject * PList4 = NULL;
+                PList4 = PyList_New(veclength);
+                for(size_t j = 0; j < veclength ; j++ )
+                {
+                    PyList_SetItem(PList4,j, Py_BuildValue("i", (*count)[i][j]));
+                    //cout << (*count)[i][j] << endl;
+                }
+                PyList_SetItem(TwoDListCounts,i,PList4);
+            }
+            TwoDListUpts = PyList_New(veclength);
+            for(size_t i = 0; i < veclength ; i++ )
+            {
+                PyObject * PList5 = NULL;
+                PList5 = PyList_New(veclength);
+                for(size_t j = 0; j < veclength ; j++ )
+                {
+                    PyList_SetItem(PList5,j, Py_BuildValue("i", (*upts)[i][j]));
+                    //cout << (*count)[i][j] << endl;
+                }
+                PyList_SetItem(TwoDListUpts,i,PList5);
+            }
+            ThreeDListDist = PyList_New(veclength);
+            for(size_t i = 0; i < veclength ; i++ )
+            {
+                PyObject * PList6 = NULL;
+                PList6 = PyList_New(veclength);
+                for(size_t j = 0; j < veclength ; j++ )
+                {
+                    size_t distVeclength = (*dist)[i][j].size();
+                    PyObject * PList7 = NULL;
+                    PList7 = PyList_New(distVeclength);
+                    for(size_t k = 0; k < distVeclength ; k++ )
+                    {
+                        PyList_SetItem(PList7,k, Py_BuildValue("f", (*dist)[i][j][k]));
+                        //cout <<"Writing: "<< (*dist)[i][j][k] << endl;
+                    }
+                    PyList_SetItem(PList6,j,PList7);
+		}
+                PyList_SetItem(ThreeDListDist,i,PList6);
+            }
+        PyObject* returnList = Py_BuildValue("OOOO",TwoDList,TwoDListCounts,TwoDListUpts,ThreeDListDist);
+        Py_XDECREF(TwoDList);
+        Py_XDECREF(TwoDListCounts);
+        Py_XDECREF(TwoDListUpts);
+        Py_XDECREF(ThreeDListDist);
+        return returnList;
+	}
+	else
+	{
+        Py_XDECREF(TwoDList);
+        Py_XDECREF(TwoDListCounts);
+        Py_XDECREF(TwoDListUpts);
+        Py_XDECREF(ThreeDListDist);
 		return NULL;
 	}
 }
@@ -187,14 +241,18 @@ static PyObject* py_dmrtMainInp(PyObject* self, PyObject* args)
         vector<vector<int> >* count = new vector< vector<int> >;
         vector<vector<int> >* upts = new vector< vector<int> >;
         vector<vector<vector<double> >>* dist = new vector<vector< vector<double> > >;
-        prog.executeFly(tes,count,upts,dist,&data,start,interval,end);
-
+        //prog.executeFly(tes,count,upts,dist,&data,start,interval,end);
+        prog.executeFly((*tes),(*count),(*upts),(*dist),data,start,interval,end);
+        
         /* Clean up. */
         Py_DECREF(input1);
+        
+        /* Parse output */
+        PyObject* result =  convertCArraysToPythonLists(tes, count, upts, dist, mode);
+	    //PyObject* result =  parseCArraysToNumpyArrays(tes, count, upts, dist, mode);
 
-	PyObject* result =  convertCArraysToPythonLists(tes, count, upts, dist, mode);
-	delete tes; delete count; delete upts; delete dist;
-	return result;
+	    delete tes; delete count; delete upts; delete dist;
+	    return result;
 }
 
 
@@ -209,8 +267,6 @@ static PyObject* py_dmrtMainInpRadii(PyObject* self, PyObject* args)
         const char *mode = NULL;
 
         if (!PyArg_ParseTuple(args, "shOO",&mode,&verb,&inputVec1, &inputRadii)){return NULL;}
-        //if (!PyArg_ParseTuple(args,"s",&mode)){return NULL;}
-        verb= true;
         if (verb==1){cout << "Entering in " << mode << " mode" << endl;}
 
         input1 = reinterpret_cast<PyArrayObject*>(PyArray_FROM_OTF(inputVec1, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY));
@@ -259,13 +315,15 @@ static PyObject* py_dmrtMainInpRadii(PyObject* self, PyObject* args)
         vector<vector<int> >* count = new vector< vector<int> >;
         vector<vector<int> >* upts = new vector< vector<int> >;
         vector<vector<vector<double> >>* dist = new vector<vector< vector<double> > >;
-        prog.executeFly(tes,count,upts,dist,&data,rad);
+        prog.executeFly((*tes),(*count),(*upts),(*dist),data,rad);
 
         /* Clean up. */
         Py_XDECREF(input1);
         Py_XDECREF(radii);
-
+        
+        /* Parse output */
         PyObject* result =  convertCArraysToPythonLists(tes, count, upts, dist, mode);
+	    //PyObject* result =  parseCArraysToNumpyArrays(tes, count, upts, dist, mode);
         delete tes; delete count; delete upts; delete dist;
         return result;
 }
