@@ -50,10 +50,9 @@ class DiffTools():
         if mode is not None:
             self.decodeMode(mode)
         if radii is not None:
-            print(self.mode)
-            dmrtTms, dmrtCts, dmrtUpts, dmrtDist = pydmrt_module.dmrtInpRadii(self.mode,verb,data,radii)
+            dmrtTms, dmrtCts, dmrtUpts, dmrtDist = pydmrt_module.dmrtInpRadii(self.mode,int(verb),data,radii)
         else:
-            dmrtTms, dmrtCts, dmrtUpts, dmrtDist = pydmrt_module.dmrtInp(data, start, interval, end,self.mode,verb)
+            dmrtTms, dmrtCts, dmrtUpts, dmrtDist = pydmrt_module.dmrtInp(data, start, interval, end,self.mode,int(verb))
         if self.rtt or self.mfpt:
             ret1,ret2,ret3 = self.calcTimes(dmrtTms,dmrtCts,rtt=self.rtt)
         elif self.tftp:
@@ -99,9 +98,9 @@ class DiffTools():
     def pydmrt(self, inputVec, start=-2.0, interval=0.1, end=2.0, mode="rtcross", verb=False,radii=None):
         print("WARNING: this wrapper is deprecated! Use DiffTools.compute(args) instead.")
         if radii is not None:
-            dmrtTms, dmrtCts, dmrtUpts, dmrtDist = pydmrt_module.dmrtInpRadii(self.mode,verb,inputVec,radii)
+            dmrtTms, dmrtCts, dmrtUpts, dmrtDist = pydmrt_module.dmrtInpRadii(self.mode,int(verb),inputVec,radii)
         else:
-            dmrtTms, dmrtCts, dmrtUpts, dmrtDist = pydmrt_module.dmrtInp(inputVec, start, interval, end,self.mode,verb)
+            dmrtTms, dmrtCts, dmrtUpts, dmrtDist = pydmrt_module.dmrtInp(inputVec, start, interval, end,self.mode,int(verb))
         return dmrtTms, dmrtCts, dmrtUpts, dmrtDist
 
 

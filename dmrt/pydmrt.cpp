@@ -90,7 +90,7 @@ static PyObject* py_dmrtMain(PyObject* self, PyObject* args)
 {
         const char *infile;
         const char *outfile;
-        bool verb;
+        int verb;
         const char *mode;
         float start;
         float interval;
@@ -150,7 +150,7 @@ static PyObject* py_dmrtMain(PyObject* self, PyObject* args)
 static PyObject* py_dmrtMainInp(PyObject* self, PyObject* args)
 {
         PyObject *inputVec1;
-        bool verb;
+        int verb;
         const char *mode;
         float start;
         float interval;
@@ -206,10 +206,12 @@ static PyObject* py_dmrtMainInpRadii(PyObject* self, PyObject* args)
         PyArrayObject* input1 = NULL;
         PyArrayObject* radii = NULL;
 
-        bool verb = false;
+        int verb = false;
         const char *mode = NULL;
 
         if (!PyArg_ParseTuple(args, "shOO",&mode,&verb,&inputVec1, &inputRadii)){return NULL;}
+        //if (!PyArg_ParseTuple(args,"s",&mode)){return NULL;}
+        verb= true;
         if (verb==1){cout << "Entering in " << mode << " mode" << endl;}
 
         input1 = reinterpret_cast<PyArrayObject*>(PyArray_FROM_OTF(inputVec1, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY));

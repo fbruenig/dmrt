@@ -33,9 +33,8 @@ dmrtalg2::dmrtalg2()
 {
 }
 
-~dmrtalg2
+dmrtalg2::~dmrtalg2()
 {
-    delete locDmrt, delete locStart, delete locCounts, delete fptDistribution;
 }
 
 
