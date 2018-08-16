@@ -242,7 +242,7 @@ static PyObject* py_dmrtMainInp(PyObject* self, PyObject* args)
         vector<vector<int> >* upts = new vector< vector<int> >;
         vector<vector<vector<double> >>* dist = new vector<vector< vector<double> > >;
         //prog.executeFly(tes,count,upts,dist,&data,start,interval,end);
-        prog.executeFly((*tes),(*count),(*upts),(*dist),data,start,interval,end);
+        prog.executeFly(tes,count,upts,dist,&data,start,interval,end);
         
         /* Clean up. */
         Py_DECREF(input1);
@@ -315,7 +315,7 @@ static PyObject* py_dmrtMainInpRadii(PyObject* self, PyObject* args)
         vector<vector<int> >* count = new vector< vector<int> >;
         vector<vector<int> >* upts = new vector< vector<int> >;
         vector<vector<vector<double> >>* dist = new vector<vector< vector<double> > >;
-        prog.executeFly((*tes),(*count),(*upts),(*dist),data,rad);
+        prog.executeFly(tes,count,upts,dist,&data,rad);
 
         /* Clean up. */
         Py_XDECREF(input1);
