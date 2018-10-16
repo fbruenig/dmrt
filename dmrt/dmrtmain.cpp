@@ -133,7 +133,7 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
                 eval.getRTTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
         }
-        else if (strncmp(this->mMode,"mftp",4)==0 || strncmp(this->mMode,"rate",4)==0)
+        else if (strncmp(this->mMode,"mfpt",4)==0 || strncmp(this->mMode,"rate",4)==0)
         {
             if (strncmp(this->mMode+4,"bins",4)==0)
             {

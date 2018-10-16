@@ -60,7 +60,7 @@ PyObject* convertCArraysToPythonLists(const vector<vector<double> >* tes,const v
         PyObject * TwoDListUpts =NULL;
         PyObject * ThreeDListDist =NULL;
 
-        if (strncmp(mode,"rt",2)==0 || strncmp(mode+1,"ftp",3)==0)
+        if (strncmp(mode,"rt",2)==0 || strncmp(mode+1,"ftp",3)==0|| strncmp(mode+1,"fpt",3)==0)
         {
             size_t veclength = tes->size()-1;
             TwoDList = PyList_New(veclength+1);
@@ -163,7 +163,7 @@ static PyObject* py_dmrtMain(PyObject* self, PyObject* args)
         PyObject * TwoDList =NULL;
         PyObject * TwoDListCounts =NULL;
 
-        if (strncmp(mode,"rt",2)==0 || strncmp(mode,"mftp",4)==0 || strncmp(mode,"cftp",4)==0)
+        if (strncmp(mode,"rt",2)==0 || strncmp(mode,"mfpt",4)==0 || strncmp(mode,"cftp",4)==0)
         {
             size_t veclength = tes->size()-1;
             TwoDList = PyList_New(veclength+1);
