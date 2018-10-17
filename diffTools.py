@@ -51,7 +51,6 @@ class DiffTools():
         if mode is not None:
             self.decodeMode(mode)
         if radii is not None:
-            print(data.shape)
             dmrtTms, dmrtCts, dmrtUpts, dmrtDist = pydmrt_module.dmrtInpRadii(self.mode,int(verb),data,radii)
         else:
             dmrtTms, dmrtCts, dmrtUpts, dmrtDist = pydmrt_module.dmrtInp(data, start, interval, end,self.mode,int(verb))
