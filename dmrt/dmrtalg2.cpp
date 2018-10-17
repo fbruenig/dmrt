@@ -549,7 +549,10 @@ void dmrtalg2::getRTTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vec
     {
         if((*vec)[i][0]<(*vec)[i-1][0])
         {
-            //cout << "Restarting!" << endl;
+            if(mVerb)
+            {
+                cout << "Restarting at index:" << i << endl;
+            }
             initializeLocalVectors();
             started = false;
         }

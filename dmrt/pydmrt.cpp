@@ -219,7 +219,7 @@ static PyObject* py_dmrtMainInp(PyObject* self, PyObject* args)
         }
 
         /* How many data points are there? */
-        int N = (int)PyArray_DIM(input1, 0)/2;
+        int N = (int)PyArray_DIM(input1, 0);
 
         /* Get pointers to the data as C-types. */
         double *in    = (double*)PyArray_DATA(input1);
@@ -281,9 +281,9 @@ static PyObject* py_dmrtMainInpRadii(PyObject* self, PyObject* args)
         }
 
         /* How many data points are there? */
-        int N = (int)PyArray_DIM(input1, 0)/2;
+        int N = (int)PyArray_DIM(input1, 0);
         int rN = (int)PyArray_DIM(radii, 0);
-
+        
         /* Get pointers to the data as C-types. */
         double *in    = (double*)PyArray_DATA(input1);
 
