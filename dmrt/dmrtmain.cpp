@@ -209,9 +209,9 @@ void dmrtMain::executeFly_continue(vector< vector<double> >* finalDmrts, vector<
     // The final vectors get an extra row to save the the radii in, in BINS mode the last column will be empty
     // according to common histogramn convention, size(bins)=size(hist)+1
 
-    (*finalDmrts) = vector< vector<double> >(vecLength+1,vector<double>(vecLength,0.0));
-    (*finalCounts) = vector< vector<int> >(vecLength,vector<int>(vecLength,0));
-    (*finalUpts) = vector< vector<int> >(vecLength,vector<int>(vecLength,0));
+    (*finalDmrts).assign(vecLength+1, vector<double>(vecLength,0.0));
+    (*finalCounts).assign(vecLength, vector<int>(vecLength,0));
+    (*finalUpts).assign(vecLength, vector<int>(vecLength,0));
 
     vector<double> radii = eval.getRadii();
 
