@@ -35,7 +35,8 @@ class DiffTools():
             tms = tms.T + tms
             cts = cts.T + cts
             tms = +np.tril(tms)-np.triu(tms)
-        tms = tms/cts*2 #make them RTT again
+            tms = tms*2 #make them RTT again
+        tms = tms/cts
         return dists,tms,cts
 
     def calcPTPR(self,dmrtTms,dmrtCts):
@@ -143,7 +144,7 @@ def loadEvalTxt(folder,filestring,mode,optionalstring="",verbose=0, recompute = 
 	return tms,cts,dists
 
 
-def getSolRdfFromTxt(folder,filestring,optionalstring, mfpt="mftp",cross="cross",verbose=0, recompute=False):
+def getSolRdfFromTxt(folder,filestring,optionalstring, mfpt="mfpt",cross="cross",verbose=0, recompute=False):
 		finalRdf=[]
 		if uni.checkForPkl(folder,optionalstring+"_hist")==True and recompute==False:
 			rdf =   uni.openTemp(folder+filestring+"_"+optionalstring+"_hist.pkl")
@@ -164,7 +165,7 @@ def getSolRdfFromTxt(folder,filestring,optionalstring, mfpt="mftp",cross="cross"
 		return rdf
 
 
-def fullAnalysis(dmrtMat, countsMat,dists, rdf, rmin = -1.5, rmax= 1.5,minVal = 0.2, maxVal = 1.0,mfpt="mftp",cross="cross", dim=1, verbose=0, smoothwidth=0):
+def fullAnalysis(dmrtMat, countsMat,dists, rdf, rmin = -1.5, rmax= 1.5,minVal = 0.2, maxVal = 1.0,mfpt="mfpt",cross="cross", dim=1, verbose=0, smoothwidth=0):
     downsampleD=1
     print("Resolution: ", countsMat.shape,"Max counts: ", countsMat.max())
     dmrtMat,dists = dtf.filterDmrtMat(dmrtMat,dists ,rmin,rmax)
@@ -172,7 +173,7 @@ def fullAnalysis(dmrtMat, countsMat,dists, rdf, rmin = -1.5, rmax= 1.5,minVal = 
     dists=dists[::downsampleD]
     if np.isnan(dmrtMat[:,-1]).any():
         print("Warning some MFPTs did not reach final Qf after filtering!")
-    if mfpt=="mftp":
+    if mfpt=="mfpt":
         dmrtMat = -dmrtMat
     if smoothwidth==0:
         ddmrt,ddists = dtf.diffDmrtMat(dmrtMat,dists)
@@ -190,7 +191,7 @@ def fullAnalysis(dmrtMat, countsMat,dists, rdf, rmin = -1.5, rmax= 1.5,minVal = 
         -np.log(r[:, 1])-2*np.log(r[:, 0])
     print(np.exp(-f).shape,rdf[0].shape)
     integral = integrate.cumtrapz(np.exp(-f), rdf[:,0], initial=0.0)
-    if mfpt=="mftp":
+    if mfpt=="mfpt":
         d = np.exp(f) * integral
     else:
         d = np.exp(f) * integral[-1]

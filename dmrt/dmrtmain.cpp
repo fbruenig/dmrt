@@ -133,19 +133,22 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
                 eval.getRTTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
         }
-        else if (strncmp(this->mMode,"mftp",4)==0 || strncmp(this->mMode,"rate",4)==0)
+        else if (strncmp(this->mMode,"mfpt",4)==0 || strncmp(this->mMode,"rate",4)==0)
         {
             if (strncmp(this->mMode+4,"bins",4)==0)
             {
-                eval.getMFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),(*finalUpts),vec);
+                eval.getRTTfrom2DVectorBins((*finalDmrts),(*finalCounts),(*finalUpts),vec);
+                //eval.getMFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
             else if (strncmp(this->mMode+4,"cross",5)==0)
             {
-                eval.getMFPTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
+                eval.getRTTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
+                //eval.getMFPTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
             else if (strncmp(this->mMode+4,"full",5)==0)
             {
-                eval.getMFPTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
+                eval.getRTTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
+                //eval.getMFPTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
         }
         else if (strncmp(this->mMode,"cftp",4)==0)
@@ -250,11 +253,13 @@ void dmrtMain::executeFly_continue(vector< vector<double> >* finalDmrts, vector<
         {
             if (bBins==true)
             {
-                eval.getMFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),(*finalUpts),vec);
+                eval.getRTTfrom2DVectorBins((*finalDmrts),(*finalCounts),(*finalUpts),vec);
+                //eval.getMFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
             else if (bCross==true)
             {
-                eval.getMFPTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
+                eval.getRTTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
+                //eval.getMFPTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
         }
         else if (bCftp==true)
