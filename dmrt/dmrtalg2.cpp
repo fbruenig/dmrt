@@ -73,10 +73,21 @@ dmrtalg2::dmrtalg2(const char *mode, bool verb, const vector<double>& radii, con
 
 void dmrtalg2::initializeLocalVectors()
 {
+    /*
+    locDmrt.clear();
+    locStart.clear();
+    locCounts.clear();
+    fptDistribution.clear();
     locDmrt = vector<vector<double> >(mVecLength,vector<double>(mVecLength,0.0));
     locStart = vector<vector<double> >(mVecLength,vector<double>(mVecLength,0.0));
     locCounts = vector<vector<int> >(mVecLength,vector<int>(mVecLength,0));
     fptDistribution = vector<vector<vector<double> > > (mVecLength,vector<vector<double> >(mVecLength,vector<double>(0)));
+    */
+
+    locDmrt.assign(mVecLength, vector<double>(mVecLength,0.0));
+    locStart.assign(mVecLength, vector<double>(mVecLength,0.0));
+    locCounts.assign(mVecLength, vector<int>(mVecLength,0));
+    fptDistribution.assign(mVecLength, vector<vector<double> >(mVecLength,vector<double>(0)));
 }
 
 double dmrtalg2::interpolate(const double t1, const double t2, const double r1, const double r2)
@@ -136,7 +147,8 @@ void dmrtalg2::updateDMRTatQf(const int i, vector<vector<double> > &dmrt, vector
             {
                 (*mfptDistribution)[i][mInd].push_back(relFin+fptDistribution[i][mInd][j]);
             }
-	        fptDistribution[i][mInd]= vector<double>(0);
+            (*tptDistribution)[i][mInd].push_back(relFin+fptDistribution[i][mInd][fptDistribution[i][mInd].size()-1]);
+            fptDistribution[i][mInd].assign(0,0.0);
             //cout << "MFPT " << mfpt << " " << i << " " << mInd << endl;
             //(*mfptDistribution)[i][mInd].push_back(mfpt);
         }
@@ -177,8 +189,8 @@ void dmrtalg2::updateQfatQ(const int i,const double time)
         locCounts[mInd][i]++;
         if (this->recordMFPTdistribution==true)
         {
- 	    fptDistribution[mInd][i].push_back(locStart[mInd][i]-time);
-	}
+            fptDistribution[mInd][i].push_back(locStart[mInd][i]-time);
+        }
     }
 }
 

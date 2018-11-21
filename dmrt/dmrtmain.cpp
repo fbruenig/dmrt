@@ -45,20 +45,24 @@ void dmrtMain::initLocalVectors(const double start, const double interval, const
     eval.initializeLocalVectors();
 }
 
-void dmrtMain::initLocalVectors(const double start, const double interval, const double end, const int dataColumn,vector< vector<vector<double> > >* finalDist)
+void dmrtMain::initLocalVectors(const double start, const double interval, const double end, const int dataColumn,vector< vector<vector<double> > >* finalDist,vector< vector<vector<double> > >* finalTPDist)
 {
 
   this->eval = dmrtalg2(this->mMode,this->bVerb,end,start,interval, dataColumn);
   (*finalDist) = vector<vector<vector<double> > > (eval.getVecLength(),vector<vector<double>>(eval.getVecLength(),vector<double>(0)));
   eval.mfptDistribution = finalDist;
+  (*finalTPDist) = vector<vector<vector<double> > > (eval.getVecLength(),vector<vector<double>>(eval.getVecLength(),vector<double>(0)));
+  eval.tptDistribution = finalTPDist;
   eval.initializeLocalVectors();
 }
 
-void dmrtMain::initLocalVectors(const vector <double> &radii, const int dataColumn,vector< vector<vector<double> > >* finalDist)
+void dmrtMain::initLocalVectors(const vector <double> &radii, const int dataColumn,vector< vector<vector<double> > >* finalDist,vector< vector<vector<double> > >* finalTPDist)
 {
   this->eval = dmrtalg2(this->mMode,this->bVerb,radii, dataColumn);
   (*finalDist) = vector<vector<vector<double> > > (eval.getVecLength(),vector<vector<double>>(eval.getVecLength(),vector<double>(0)));
   eval.mfptDistribution = finalDist;
+  (*finalTPDist) = vector<vector<vector<double> > > (eval.getVecLength(),vector<vector<double>>(eval.getVecLength(),vector<double>(0)));
+  eval.tptDistribution = finalTPDist;
   eval.initializeLocalVectors();
 }
 
@@ -192,15 +196,15 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
     myfile.close();
 }
 
-void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts,vector< vector<vector<double> > >* finalDist, const vector< vector<double> >* vec, const double start, const double interval, const double end, const int dataColumn)
+void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts,vector< vector<vector<double> > >* finalDist, vector< vector<vector<double> > >* finalTPDist, const vector< vector<double> >* vec, const double start, const double interval, const double end, const int dataColumn)
 {
-        initLocalVectors(start, interval, end, dataColumn,finalDist);
+        initLocalVectors(start, interval, end, dataColumn,finalDist,finalTPDist);
         executeFly_continue(finalDmrts,finalCounts,finalUpts,vec);
 }
 
-void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts,vector< vector<vector<double> > >* finalDist, const vector< vector<double> >* vec, const vector<double> radii, const int dataColumn)
+void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts,vector< vector<vector<double> > >* finalDist, vector< vector<vector<double> > >* finalTPDist, const vector< vector<double> >* vec, const vector<double> radii, const int dataColumn)
 {
-        initLocalVectors(radii,dataColumn,finalDist);
+        initLocalVectors(radii,dataColumn,finalDist,finalTPDist);
         executeFly_continue(finalDmrts,finalCounts,finalUpts,vec);
 }
 
@@ -212,9 +216,9 @@ void dmrtMain::executeFly_continue(vector< vector<double> >* finalDmrts, vector<
     // The final vectors get an extra row to save the the radii in, in BINS mode the last column will be empty
     // according to common histogramn convention, size(bins)=size(hist)+1
 
-    (*finalDmrts) = vector< vector<double> >(vecLength+1,vector<double>(vecLength,0.0));
-    (*finalCounts) = vector< vector<int> >(vecLength,vector<int>(vecLength,0));
-    (*finalUpts) = vector< vector<int> >(vecLength,vector<int>(vecLength,0));
+    (*finalDmrts).assign(vecLength+1, vector<double>(vecLength,0.0));
+    (*finalCounts).assign(vecLength, vector<int>(vecLength,0));
+    (*finalUpts).assign(vecLength, vector<int>(vecLength,0));
 
     vector<double> radii = eval.getRadii();
 
