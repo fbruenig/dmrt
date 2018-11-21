@@ -147,7 +147,7 @@ void dmrtalg2::updateDMRTatQf(const int i, vector<vector<double> > &dmrt, vector
             {
                 (*mfptDistribution)[i][mInd].push_back(relFin+fptDistribution[i][mInd][j]);
             }
-            (*tptDistribution)[i][mInd].push_back(relFin+fptDistribution[i][mInd][fptDistribution[i][mInd].size()-1]);
+            (*tptDistribution)[i][mInd].push_back((*mfptDistribution)[i][mInd][(*mfptDistribution)[i][mInd].size()-1]);
             fptDistribution[i][mInd].assign(0,0.0);
             //cout << "MFPT " << mfpt << " " << i << " " << mInd << endl;
             //(*mfptDistribution)[i][mInd].push_back(mfpt);

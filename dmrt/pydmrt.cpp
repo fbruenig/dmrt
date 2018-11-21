@@ -119,10 +119,8 @@ PyObject* convertCArraysToPythonLists(const vector<vector<double> >* tes,const v
                         //cout <<"Writing: "<< (*dist)[i][j][k] << endl;
                     }
                     PyList_SetItem(PList6,j,PList7);
-                    Py_XDECREF(PList7);
 		}
                 PyList_SetItem(ThreeDListDist,i,PList6);
-                Py_XDECREF(PList6);
             }
             ThreeDListTPDist = PyList_New(veclength);
             for(size_t i = 0; i < veclength ; i++ )
@@ -143,7 +141,7 @@ PyObject* convertCArraysToPythonLists(const vector<vector<double> >* tes,const v
 		}
                 PyList_SetItem(ThreeDListTPDist,i,PList8);
             }
-        PyObject* returnList = Py_BuildValue("OOOO",TwoDList,TwoDListCounts,TwoDListUpts,ThreeDListDist,ThreeDListTPDist);
+        PyObject* returnList = Py_BuildValue("OOOOO",TwoDList,TwoDListCounts,TwoDListUpts,ThreeDListDist,ThreeDListTPDist);
         Py_XDECREF(TwoDList);
         Py_XDECREF(TwoDListCounts);
         Py_XDECREF(TwoDListUpts);
@@ -345,6 +343,7 @@ static PyObject* py_dmrtMainInpRadii(PyObject* self, PyObject* args)
         Py_XDECREF(input1);
         Py_XDECREF(radii);
 
+        if (verb==1){cout << "Start parsing output." << endl;}
         /* Parse output */
         PyObject* result =  convertCArraysToPythonLists(tes, count, upts, dist, tpDist, mode);
 	    //PyObject* result =  parseCArraysToNumpyArrays(tes, count, upts, dist, mode);
