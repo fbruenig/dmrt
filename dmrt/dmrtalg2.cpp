@@ -84,7 +84,7 @@ void dmrtalg2::initializeLocalVectors()
     fptDistribution = vector<vector<vector<double> > > (mVecLength,vector<vector<double> >(mVecLength,vector<double>(0)));
     */
 
-    locDmrt.assgin(mVecLength, vector<double>(mVecLength,0.0));
+    locDmrt.assign(mVecLength, vector<double>(mVecLength,0.0));
     locStart.assign(mVecLength, vector<double>(mVecLength,0.0));
     locCounts.assign(mVecLength, vector<int>(mVecLength,0));
     fptDistribution.assign(mVecLength, vector<vector<double> >(mVecLength,vector<double>(0)));
@@ -147,6 +147,7 @@ void dmrtalg2::updateDMRTatQf(const int i, vector<vector<double> > &dmrt, vector
             {
                 (*mfptDistribution)[i][mInd].push_back(relFin+fptDistribution[i][mInd][j]);
             }
+            (*tptDistribution)[i][mInd].push_back(relFin+fptDistribution[i][mInd][fptDistribution[i][mInd].size()-1]);
             fptDistribution[i][mInd].assign(0,0.0);
             //cout << "MFPT " << mfpt << " " << i << " " << mInd << endl;
             //(*mfptDistribution)[i][mInd].push_back(mfpt);
