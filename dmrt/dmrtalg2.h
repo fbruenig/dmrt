@@ -79,6 +79,7 @@ public:
     void updateCountsatQReturn(const int i);
     void updateCountsatQfReturn(const int i, vector<vector<int> > &counts);
 
+    vector<vector<double>> * dmrtVar;
     vector<vector<vector<double>>> * mfptDistribution;
     vector<vector<vector<double>>> * tptDistribution;
 

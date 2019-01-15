@@ -45,10 +45,12 @@ void dmrtMain::initLocalVectors(const double start, const double interval, const
     eval.initializeLocalVectors();
 }
 
-void dmrtMain::initLocalVectors(const double start, const double interval, const double end, const int dataColumn,vector< vector<vector<double> > >* finalDist,vector< vector<vector<double> > >* finalTPDist)
+void dmrtMain::initLocalVectors(const double start, const double interval, const double end, const int dataColumn, vector<vector<double> > * dmrtVar, vector< vector<vector<double> > >* finalDist, vector< vector<vector<double> > >* finalTPDist)
 {
 
   this->eval = dmrtalg2(this->mMode,this->bVerb,end,start,interval, dataColumn);
+  (*dmrtVar) = vector<vector<double> > (eval.getVecLength(),vector<double>(eval.getVecLength(),0.0));
+  eval.dmrtVar = dmrtVar;
   (*finalDist) = vector<vector<vector<double> > > (eval.getVecLength(),vector<vector<double>>(eval.getVecLength(),vector<double>(0)));
   eval.mfptDistribution = finalDist;
   (*finalTPDist) = vector<vector<vector<double> > > (eval.getVecLength(),vector<vector<double>>(eval.getVecLength(),vector<double>(0)));
@@ -56,9 +58,11 @@ void dmrtMain::initLocalVectors(const double start, const double interval, const
   eval.initializeLocalVectors();
 }
 
-void dmrtMain::initLocalVectors(const vector <double> &radii, const int dataColumn,vector< vector<vector<double> > >* finalDist,vector< vector<vector<double> > >* finalTPDist)
+void dmrtMain::initLocalVectors(const vector <double> &radii, const int dataColumn, vector<vector<double> > * dmrtVar, vector< vector<vector<double> > >* finalDist, vector< vector<vector<double> > >* finalTPDist)
 {
   this->eval = dmrtalg2(this->mMode,this->bVerb,radii, dataColumn);
+  (*dmrtVar) = vector<vector<double> > (eval.getVecLength(),vector<double>(eval.getVecLength(),0.0));
+  eval.dmrtVar = dmrtVar;
   (*finalDist) = vector<vector<vector<double> > > (eval.getVecLength(),vector<vector<double>>(eval.getVecLength(),vector<double>(0)));
   eval.mfptDistribution = finalDist;
   (*finalTPDist) = vector<vector<vector<double> > > (eval.getVecLength(),vector<vector<double>>(eval.getVecLength(),vector<double>(0)));
@@ -196,15 +200,15 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
     myfile.close();
 }
 
-void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts,vector< vector<vector<double> > >* finalDist, vector< vector<vector<double> > >* finalTPDist, const vector< vector<double> >* vec, const double start, const double interval, const double end, const int dataColumn)
+void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts, vector<vector<double> >* dmrtVar, vector< vector<vector<double> > >* finalDist, vector< vector<vector<double> > >* finalTPDist, const vector< vector<double> >* vec, const double start, const double interval, const double end, const int dataColumn)
 {
-        initLocalVectors(start, interval, end, dataColumn,finalDist,finalTPDist);
+        initLocalVectors(start, interval, end, dataColumn,dmrtVar,finalDist,finalTPDist);
         executeFly_continue(finalDmrts,finalCounts,finalUpts,vec);
 }
 
-void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts,vector< vector<vector<double> > >* finalDist, vector< vector<vector<double> > >* finalTPDist, const vector< vector<double> >* vec, const vector<double> radii, const int dataColumn)
+void dmrtMain::executeFly(vector< vector<double> >* finalDmrts, vector< vector<int> >* finalCounts, vector< vector<int> >* finalUpts, vector<vector<double> >* dmrtVar, vector< vector<vector<double> > >* finalDist, vector< vector<vector<double> > >* finalTPDist, const vector< vector<double> >* vec, const vector<double> radii, const int dataColumn)
 {
-        initLocalVectors(radii,dataColumn,finalDist,finalTPDist);
+        initLocalVectors(radii,dataColumn,dmrtVar,finalDist,finalTPDist);
         executeFly_continue(finalDmrts,finalCounts,finalUpts,vec);
 }
 

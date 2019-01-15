@@ -27,17 +27,20 @@ class DiffTools():
             self.encodeMode()
         return
 
-    def calcTimes(self,dmrtTms,dmrtCts,rtt=False):
+    def calcTimes(self,dmrtTms,dmrtCts,dmrtVars,rtt=False):
         tms = np.array(dmrtTms)[:-1,:]
         cts = np.array(dmrtCts)
+        wars = np.array(dmrtVars)
         dists = np.array(dmrtTms)[-1,:]
         if rtt:
             tms = tms.T + tms
             cts = cts.T + cts
             tms = +np.tril(tms)-np.triu(tms)
             tms = tms*2 #make them RTT again
+            wars = wars.T + wars
         tms = tms/cts
-        return dists,tms,cts
+        errs = np.sqrt(wars)/cts
+        return dists,tms,cts,errs
 
     def calcPTPR(self,dmrtTms,dmrtCts):
         normal = np.array(dmrtTms)[:-1,0]
@@ -51,17 +54,17 @@ class DiffTools():
         if mode is not None:
             self.decodeMode(mode)
         if radii is not None:
-            dmrtTms, dmrtCts, dmrtUpts, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInpRadii(self.mode,int(verb),data,radii)
+            dmrtTms, dmrtCts, dmrtUpts, dmrtVars, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInpRadii(self.mode,int(verb),data,radii)
         else:
-            dmrtTms, dmrtCts, dmrtUpts, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInp(data, start, interval, end,self.mode,int(verb))
+            dmrtTms, dmrtCts, dmrtUpts, dmrtVars, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInp(data, start, interval, end,self.mode,int(verb))
         if self.rtt or self.mfpt:
-            ret1,ret2,ret3 = self.calcTimes(dmrtTms,dmrtCts,rtt=self.rtt)
+            ret1,ret2,ret3,ret4 = self.calcTimes(dmrtTms,dmrtCts,dmrtVars,rtt=self.rtt)
         elif self.tftp:
             return self.calcPTPR(dmrtTms,dmrtCts)
         if self.dist:
-            return ret1,ret2,ret3,np.array(dmrtUpts),dmrtDist,dmrtTPDist
+            return ret1,ret2,ret3,ret4,np.array(dmrtUpts),dmrtDist,dmrtTPDist
         else:
-            return ret1,ret2,ret3,np.array(dmrtUpts)
+            return ret1,ret2,ret3,ret4,np.array(dmrtUpts)
 
     def decodeMode(self,mode):
         if mode.startswith("rt"):

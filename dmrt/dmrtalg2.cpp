@@ -140,14 +140,23 @@ void dmrtalg2::updateDMRTatQf(const int i, vector<vector<double> > &dmrt, vector
         counts[i][mInd] += locCounts[i][mInd];
         locCounts[i][mInd]=0;
         upts[i][mInd]++;
-        if (this->recordMFPTdistribution==true && mfpt>0.0)
+        if (mfpt>0.0)
         {
-            (*mfptDistribution)[i][mInd].push_back(relFin);
+            double mean = dmrt[i][mInd]/counts[i][mInd];
+            (*dmrtVar)[i][mInd] += (relFin-mean)*(relFin-mean);
             for(int j=0; j<fptDistribution[i][mInd].size(); j++)
             {
-                (*mfptDistribution)[i][mInd].push_back(relFin+fptDistribution[i][mInd][j]);
+                (*dmrtVar)[i][mInd] += (relFin+fptDistribution[i][mInd][j]-mean)*(relFin+fptDistribution[i][mInd][j]-mean);
             }
-            (*tptDistribution)[i][mInd].push_back((*mfptDistribution)[i][mInd][(*mfptDistribution)[i][mInd].size()-1]);
+            if( this->recordMFPTdistribution==true )
+            {
+                (*mfptDistribution)[i][mInd].push_back(relFin);
+                for(int j=0; j<fptDistribution[i][mInd].size(); j++)
+                {
+                    (*mfptDistribution)[i][mInd].push_back(relFin+fptDistribution[i][mInd][j]);
+                }
+                (*tptDistribution)[i][mInd].push_back((*mfptDistribution)[i][mInd][(*mfptDistribution)[i][mInd].size()-1]);
+            }
             fptDistribution[i][mInd].assign(0,0.0);
             //cout << "MFPT " << mfpt << " " << i << " " << mInd << endl;
             //(*mfptDistribution)[i][mInd].push_back(mfpt);
@@ -187,10 +196,7 @@ void dmrtalg2::updateQfatQ(const int i,const double time)
     {
         locDmrt[mInd][i]+=  locStart[mInd][i]-time;
         locCounts[mInd][i]++;
-        if (this->recordMFPTdistribution==true)
-        {
-            fptDistribution[mInd][i].push_back(locStart[mInd][i]-time);
-        }
+        fptDistribution[mInd][i].push_back(locStart[mInd][i]-time);
     }
 }
 
