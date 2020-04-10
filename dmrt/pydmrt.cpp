@@ -11,21 +11,24 @@
 using namespace std;
 
 
-PyObject* parseCArraysToNumpyArrays(vector<vector<double> >* tes, vector<vector<int> >* count, vector<vector<int> >* upts,const vector<vector<vector<double> >>* dist,const char* mode)
+PyObject* parseCArraysToNumpyArrays(const vector<vector<double> >* tes,const vector<vector<int> >* count,const vector<vector<int> >* upts, const vector<vector<double> >* vars,const vector<vector<vector<double> >>* dist,const vector<vector<vector<double> >>* tpDist,const char* mode)
 {
         PyObject * TwoDList =NULL;
         PyObject * TwoDListCounts =NULL;
         PyObject * TwoDListUpts =NULL;
+        PyObject * TwoDListVars =NULL;
         PyObject * ThreeDListDist =NULL;
+        PyObject * ThreeDListTPDist =NULL;
 
         if (strncmp(mode,"rt",2)==0 || strncmp(mode+1,"ftp",3)==0 || strncmp(mode+1,"fpt",3)==0)
         {
-            size_t veclength = tes->size()-1;
+            int veclength = tes->size()-1;
             npy_intp tmsDims[2] = {veclength+1,veclength};
             npy_intp countDims[2] = {veclength,veclength};
             TwoDList = PyArray_SimpleNewFromData(2,tmsDims, NPY_DOUBLE, (double*)tes->data() );
             TwoDListCounts = PyArray_SimpleNewFromData(2,countDims, NPY_INT, (double*)count->data() );
             TwoDListUpts = PyArray_SimpleNewFromData(2,countDims, NPY_INT, (int*)upts->data() );
+            TwoDListVars = PyArray_SimpleNewFromData(2,countDims, NPY_INT, (int*)vars->data() );
             ThreeDListDist = PyList_New(veclength);
             for(size_t i = 0; i < veclength ; i++ )
             {
@@ -41,11 +44,37 @@ PyObject* parseCArraysToNumpyArrays(vector<vector<double> >* tes, vector<vector<
                         PyList_SetItem(PList7,k, Py_BuildValue("f", (*dist)[i][j][k]));
                         //cout <<"Writing: "<< (*dist)[i][j][k] << endl;
                     }
-                    PyList_SetItem(PList6,j,Py_BuildValue("O",PList7));
-		}
-                PyList_SetItem(ThreeDListDist,i,Py_BuildValue("O",PList6));
+                    PyList_SetItem(PList6,j,PList7);
+		        }
+                PyList_SetItem(ThreeDListDist,i,PList6);
             }
-        return Py_BuildValue("OOOO",TwoDList,TwoDListCounts,TwoDListUpts,ThreeDListDist);
+            ThreeDListTPDist = PyList_New(veclength);
+            for(size_t i = 0; i < veclength ; i++ )
+            {
+                PyObject * PList8 = NULL;
+                PList8 = PyList_New(veclength);
+                for(size_t j = 0; j < veclength ; j++ )
+                {
+                    size_t distVeclength = (*tpDist)[i][j].size();
+                    PyObject * PList9 = NULL;
+                    PList9 = PyList_New(distVeclength);
+                    for(size_t k = 0; k < distVeclength ; k++ )
+                    {
+                        PyList_SetItem(PList9,k, Py_BuildValue("f", (*tpDist)[i][j][k]));
+                        //cout <<"Writing: "<< (*dist)[i][j][k] << endl;
+                    }
+                    PyList_SetItem(PList8,j,PList9);
+		        }
+                PyList_SetItem(ThreeDListTPDist,i,PList8);
+            }
+        PyObject* returnList = Py_BuildValue("OOOOOO",TwoDList,TwoDListCounts,TwoDListUpts,TwoDListVars,ThreeDListDist,ThreeDListTPDist);
+        Py_XDECREF(TwoDList);
+        Py_XDECREF(TwoDListCounts);
+        Py_XDECREF(TwoDListUpts);
+        Py_XDECREF(TwoDListVars);
+        Py_XDECREF(ThreeDListDist);
+        Py_XDECREF(ThreeDListTPDist);
+        return returnList;
 	}
 	else
 	{
@@ -362,7 +391,7 @@ static PyObject* py_dmrtMainInpRadii(PyObject* self, PyObject* args)
         if (verb==1){cout << "Start parsing output." << endl;}
         /* Parse output */
         PyObject* result =  convertCArraysToPythonLists(tes, count, upts, vars, dist, tpDist, mode);
-	    //PyObject* result =  parseCArraysToNumpyArrays(tes, count, upts, dist, mode);
+	    //PyObject* result =  parseCArraysToNumpyArrays(tes, count, upts, vars, dist, tpDist, mode);
         delete tes; delete count; delete upts; delete vars, delete dist; delete tpDist;
         return result;
 }
