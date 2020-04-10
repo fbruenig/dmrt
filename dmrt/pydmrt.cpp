@@ -10,6 +10,10 @@
 
 using namespace std;
 
+template<typename T>
+void empty_swap(std::vector<T>& vec) {
+   vector<T>().swap(vec);
+}
 
 PyObject* parseCArraysToNumpyArrays(const vector<vector<double> >* tes,const vector<vector<int> >* count,const vector<vector<int> >* upts, const vector<vector<double> >* vars,const vector<vector<vector<double> >>* dist,const vector<vector<vector<double> >>* tpDist,const char* mode)
 {
@@ -314,10 +318,11 @@ static PyObject* py_dmrtMainInp(PyObject* self, PyObject* args)
 
         /* Parse output */
         PyObject* result =  convertCArraysToPythonLists(tes, count, upts, vars, dist, tpDist, mode);
-	    //PyObject* result =  parseCArraysToNumpyArrays(tes, count, upts, dist, mode);
+        //PyObject* result =  parseCArraysToNumpyArrays(tes, count, upts, dist, mode);
 
-	    delete tes; delete count; delete upts; delete vars, delete dist; delete tpDist;
-	    return result;
+        empty_swap(*tes); empty_swap(*count); empty_swap(*upts); empty_swap(*vars); empty_swap(*dist); empty_swap(*tpDist);
+        delete tes; delete count; delete upts; delete vars, delete dist; delete tpDist;
+        return result;
 }
 
 
@@ -370,7 +375,7 @@ static PyObject* py_dmrtMainInpRadii(PyObject* self, PyObject* args)
         cout << "Start parsing radii data!" << endl;
         for (int i =0; i<rN; i++)
         {
-           	rad[i] = *(rin+i);
+            rad[i] = *(rin+i);
         }
 
         dmrtMain prog = dmrtMain(mode,verb);
@@ -391,7 +396,10 @@ static PyObject* py_dmrtMainInpRadii(PyObject* self, PyObject* args)
         if (verb==1){cout << "Start parsing output." << endl;}
         /* Parse output */
         PyObject* result =  convertCArraysToPythonLists(tes, count, upts, vars, dist, tpDist, mode);
-	    //PyObject* result =  parseCArraysToNumpyArrays(tes, count, upts, vars, dist, tpDist, mode);
+        //PyObject* result =  parseCArraysToNumpyArrays(tes, count, upts, vars, dist, tpDist, mode);
+
+        //delete in; delete rin;
+        empty_swap(*tes); empty_swap(*count); empty_swap(*upts); empty_swap(*vars); empty_swap(*dist); empty_swap(*tpDist);
         delete tes; delete count; delete upts; delete vars, delete dist; delete tpDist;
         return result;
 }
