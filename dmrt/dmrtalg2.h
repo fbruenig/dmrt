@@ -62,11 +62,11 @@ public:
     void updateQfatQWithDistribution(const int i, const double time);
 
 
-    // p(tp|r) extraction: (option== tftp)
+    // p(tp|x) extraction: (option== ptpx)
 
-    void updateCMatrixTFPT(vector<vector<double> > &counts);
-    void updateCMatrixTFPT(vector<vector<int> > &counts);
-    void getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<vector<int> > &counts, const vector<vector<double> > *vec);
+    void updateCMatrixPTPX(vector<vector<double> > &counts, const int back = 0);
+    void updateCMatrixPTPX(vector<vector<int> > &counts, const int back = 0);
+    void getPTPXfrom2DVectorBins(vector<vector<double> > &normal, vector<vector<int> > &counts, const vector<vector<double> > *vec);
 
 
 

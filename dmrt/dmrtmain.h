@@ -29,7 +29,7 @@ private:
     bool bVerb;
     const char* mMode;
 
-    bool bRt,bMfpt,bCftp,bTftp,bRate,bBins,bCross,bFull;
+    bool bRt,bMfpt,bCftp,bPtpx,bRate,bBins,bCross,bFull;
 
     dmrtalg2 eval;
 };

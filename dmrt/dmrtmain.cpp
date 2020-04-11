@@ -14,7 +14,7 @@ dmrtMain::dmrtMain(const char *mode, bool verb)
     bRt=false;
     bMfpt=false;
     bCftp=false;
-    bTftp=false;
+    bPtpx=false;
     bRate=false;
     bBins=false;
     bCross=false;
@@ -30,7 +30,7 @@ void dmrtMain::decodeMode()
     if (strncmp(mMode,"rt",2)==0){bRt=true;}
     else if (strncmp(mMode,"mfpt",4)==0){bMfpt=true;}
     else if (strncmp(mMode,"cftp",4)==0){bCftp=true;}
-    else if (strncmp(mMode,"tftp",4)==0){bTftp=true;}
+    else if (strncmp(mMode,"ptpx",4)==0){bPtpx=true;}
     else if (strncmp(mMode,"rate",4)==0){bRate=true;}
 
     if (strncmp(mMode+4,"bins",4)==0 || strncmp(mMode+2,"bins",4)==0){this->bBins=true;}
@@ -299,21 +299,21 @@ void dmrtMain::executeFly_continue(vector< vector<double> >* finalDmrts, vector<
                 eval.getRateFullfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
         }
-        else if (bTftp==true)
+        else if (bPtpx==true)
         {
             if (bBins==true)
             {
                 cout << "Initial config: "<< vecLength << endl;
                 //eval.getFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),vec);
-                eval.getTFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),vec);
+                eval.getPTPXfrom2DVectorBins((*finalDmrts),(*finalCounts),vec);
                 cout << (*finalDmrts)[0][0] << " " <<  (*finalDmrts)[10][0] << " " << (*finalDmrts)[20][0] << endl;
             }
             else if (bCross==true)
             {
                 cout << "Initial config: "<< vecLength << endl;
-                cout << "TFTPCROSS not implemented (in fact incorrect!): Calling TFTPBINS"<< endl;
+                cout << "PTPXCROSS not implemented (in fact incorrect!): Calling PTPXBINS"<< endl;
                 //eval.getTFPTfrom2DVectorCross((*finalDmrts)[0][0],(*finalDmrts)[0][1],(*finalCounts),vec);
-                eval.getTFPTfrom2DVectorBins((*finalDmrts),(*finalCounts),vec);
+                eval.getPTPXfrom2DVectorBins((*finalDmrts),(*finalCounts),vec);
                 cout << (*finalDmrts)[0][0] << " " <<  (*finalDmrts)[10][0] << " " << (*finalDmrts)[20][0] << endl;
             }
         }

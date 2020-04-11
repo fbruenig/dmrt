@@ -222,20 +222,20 @@ void dmrtalg2::updateQfatQWithDistribution(const int i,const double time)
 }
 
 
-void dmrtalg2::updateCMatrixTFPT(vector<vector<int> > &counts)
+void dmrtalg2::updateCMatrixPTPX(vector<vector<int> > &counts,const int back)
 {
     for (int i=0;i< mVecLength;i++)
     {
-       counts[i][0]+=locCounts[i][0];
+       counts[i][back]+=locCounts[i][back];
     }
 
 }
 
-void dmrtalg2::updateCMatrixTFPT(vector<vector<double> > &counts)
+void dmrtalg2::updateCMatrixPTPX(vector<vector<double> > &counts,const int back)
 {
     for (int i=0;i< mVecLength;i++)
     {
-       counts[i][0]+=locCounts[i][0];
+       counts[i][back]+=locCounts[i][back];
     }
 
 }
@@ -397,7 +397,7 @@ void dmrtalg2::getRTTfrom2DVectorBins(vector<vector<double> > &dmrt, vector<vect
     }
 }
 
-void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<vector<int> > &counts,const vector<vector<double> > *vec)
+void dmrtalg2::getPTPXfrom2DVectorBins(vector<vector<double> > &normal, vector<vector<int> > &counts,const vector<vector<double> > *vec)
 {
     bool started = false;
     int timer = 0;
@@ -410,6 +410,7 @@ void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<v
     {
         if(((*vec)[i][0]<(*vec)[i-1][0]) && (i<(*vec).size()-1))
         {
+            vector<vector<int>>(0).swap(locCounts);
             locCounts = vector<vector<int> >(mVecLength,vector<int>(mVecLength,0));
             bool newStart=false;
             findStart2(newStart,(*vec)[i][mDataColumn]);
@@ -440,23 +441,25 @@ void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<v
                 {
                     if(lowstart == true)
                     {
-                        updateCMatrixTFPT(counts);
-                        backcross++;
+                        updateCMatrixPTPX(counts, 0);
+                        forcross++;
                     }
                     else
                     {
                         back++;
-                        updateCMatrixTFPT(normal);
+                        updateCMatrixPTPX(normal, 1);
                     }
                     timer =0;
                     lowstart = false;
                     highstart = false;
+                    vector<vector<int>>(0).swap(locCounts);
                     locCounts = vector<vector<int> >(mVecLength,vector<int>(mVecLength,0));
                     started = false;
                 }
                 else
                 {
                     locCounts[mInd][0]++;
+                    locCounts[mInd][1]++;
                 }
             }
             else if((*vec)[i][mDataColumn]<mRadii[mInd-1])
@@ -470,12 +473,12 @@ void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<v
                 {
                     if(highstart == true)
                     {
-                        updateCMatrixTFPT(counts);
-                        forcross++;
+                        updateCMatrixPTPX(counts, 1);
+                        backcross++;
                     }
                     else
                     {
-                        updateCMatrixTFPT(normal);
+                        updateCMatrixPTPX(normal, 0);
                         back++;
                     }
                     timer =0;
@@ -488,11 +491,13 @@ void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<v
                 else
                 {
                     locCounts[mInd][0]++;
+                    locCounts[mInd][1]++;
                 }
             }
             else
             {
                 locCounts[mInd][0]++;
+                locCounts[mInd][1]++;
             }
         }
         else
@@ -515,6 +520,7 @@ void dmrtalg2::getTFPTfrom2DVectorBins(vector<vector<double> > &normal, vector<v
     }
     cout << "Crossing vs Back:" << forcross << " "<< backcross << " " << back << endl;
 }
+
 
 void dmrtalg2::getMFPTfrom2DVectorCross(vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const vector<vector<double> > *vec)
 {

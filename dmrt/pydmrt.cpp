@@ -24,7 +24,7 @@ PyObject* parseCArraysToNumpyArrays(const vector<vector<double> >* tes,const vec
         PyObject * ThreeDListDist =NULL;
         PyObject * ThreeDListTPDist =NULL;
 
-        if (strncmp(mode,"rt",2)==0 || strncmp(mode+1,"ftp",3)==0 || strncmp(mode+1,"fpt",3)==0)
+        if (strncmp(mode,"rt",2)==0 || strncmp(mode+1,"ftp",3)==0 || strncmp(mode+1,"fpt",3)==0 || strncmp(mode,"ptp",3)==0)
         {
             int veclength = tes->size()-1;
             npy_intp tmsDims[2] = {veclength+1,veclength};
@@ -95,7 +95,7 @@ PyObject* convertCArraysToPythonLists(const vector<vector<double> >* tes,const v
         PyObject * ThreeDListDist =NULL;
         PyObject * ThreeDListTPDist =NULL;
 
-        if (strncmp(mode,"rt",2)==0 || strncmp(mode+1,"ftp",3)==0|| strncmp(mode+1,"fpt",3)==0)
+        if (strncmp(mode,"rt",2)==0 || strncmp(mode+1,"ftp",3)==0|| strncmp(mode+1,"fpt",3)==0 || strncmp(mode,"ptp",3)==0)
         {
             size_t veclength = tes->size()-1;
             TwoDList = PyList_New(veclength+1);

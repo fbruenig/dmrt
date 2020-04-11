@@ -7,20 +7,22 @@ import numpy as np
 from scipy import integrate
 from os import listdir
 from os.path import isfile, join
+import gc
 
 import pydmrt as pydmrt_module
 
 
 
+
 class DiffTools():
 
-    def __init__(self,mode=None,rtt=True,mfpt=False,tftp=False,cross=True,bins=False,dist=False):
+    def __init__(self,mode=None,rtt=True,mfpt=False,ptpx=False,cross=True,bins=False,dist=False):
         if mode is not None:
             self.decodeMode(mode)
         else:
             self.rtt=rtt
             self.mfpt=mfpt
-            self.tftp=tftp
+            self.ptpx=ptpx
             self.bins=bins
             self.cross=cross
             self.dist=dist
@@ -43,12 +45,16 @@ class DiffTools():
         return dists,tms,cts,errs
 
     def calcPTPR(self,dmrtTms,dmrtCts):
-        normal = np.array(dmrtTms)[:-1,0]
-        pxtp= np.array(dmrtCts)[:,0]
+        normal0 = np.array(dmrtTms)[:-1,0]
+        normal1 = np.array(dmrtTms)[:-1,1]
+        ptpx0= np.array(dmrtCts)[:,0]
+        ptpx1= np.array(dmrtCts)[:,1]
         dists = np.array(dmrtTms)[-1,:]
-        total = normal + pxtp
-        pxtp = pxtp/total
-        return dists,pxtp,total
+        total0 = normal0 + ptpx0
+        total1 = normal1 + ptpx1
+        total = normal0 + normal1 + ptpx0 + ptpx1
+        ptpx = (ptpx0 + ptpx1)/total
+        return dists, ptpx, total, ptpx0/total0, ptpx1/total1
 
     def compute(self,data,start=-2.0, interval=0.1, end=2.0, mode=None, verb=False, radii=None):
         if mode is not None:
@@ -57,9 +63,10 @@ class DiffTools():
             dmrtTms, dmrtCts, dmrtUpts, dmrtVars, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInpRadii(self.mode,int(verb),data,radii)
         else:
             dmrtTms, dmrtCts, dmrtUpts, dmrtVars, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInp(data, start, interval, end,self.mode,int(verb))
+        gc.collect()
         if self.rtt or self.mfpt:
             ret1,ret2,ret3,ret4 = self.calcTimes(dmrtTms,dmrtCts,dmrtVars,rtt=self.rtt)
-        elif self.tftp:
+        elif self.ptpx:
             return self.calcPTPR(dmrtTms,dmrtCts)
         if self.dist:
             return ret1,ret2,ret3,ret4,np.array(dmrtUpts),dmrtDist,dmrtTPDist
@@ -68,11 +75,11 @@ class DiffTools():
 
     def decodeMode(self,mode):
         if mode.startswith("rt"):
-            self.rtt,self.mfpt,self.tftp=True,False,False
+            self.rtt,self.mfpt,self.ptpx=True,False,False
         elif mode.startswith("mfpt"):
-            self.rtt,self.mfpt,self.tftp=False,True,False
-        elif mode.startswith("tftp"):
-            self.rtt,self.mfpt,self.tftp=False,False,True
+            self.rtt,self.mfpt,self.ptpx=False,True,False
+        elif mode.startswith("ptpx"):
+            self.rtt,self.mfpt,self.ptpx=False,False,True
         if "bins" in mode:
             self.cross,self.bins=False,True
         elif "cross" in mode:
@@ -88,8 +95,8 @@ class DiffTools():
             mode="rt"
         elif self.mfpt:
             mode="mfpt"
-        elif self.tftp:
-            mode="tftp"
+        elif self.ptpx:
+            mode="ptpx"
         if self.cross:
             mode=mode+"cross"
         elif self.bins:
