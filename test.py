@@ -18,7 +18,7 @@ testtraj = np.loadtxt("./test_traj_doublewell_od.txt")
 dt=DiffTools()
 
 #&inputVec1, &start, &interval,&end,&mode,&verb
-dmrtTms, dmrtCts, dmrtUpts, dmrtDist = dt.pydmrt(testtraj, -1.7, 0.1, 1.7, "rtcross",True)
+dmrtTms, dmrtCts, dmrtUpts, dmrtDist, dmrtTPDist = dt.pydmrt(testtraj, -1.7, 0.1, 1.7, "rtcross",True)
 
 refTms = np.loadtxt("./reference_Tms.txt")
 refCts = np.loadtxt("./reference_Cts.txt")
@@ -32,7 +32,7 @@ if (diffTms + float(diffCts) + float(diffUpts) != 0.0):
 else:
   print("Reference data is reproduced!")
 
-dists,tms,cts = dt.calcTimes(dmrtTms,dmrtCts,True)
+dists,tms,cts,errs = dt.calcTimes(dmrtTms,dmrtCts,True)
 plotTimes(dists,tms)
 
 hist,bins = np.histogram(testtraj[:,1],bins=dists)
@@ -51,7 +51,7 @@ plt.show()
 
 print("Short test: radii mode")
 radii = [-2,-1.5,0.0,1.5,2]
-dists,tms,cts,upts,rtDist = dt.compute(testtraj,radii=radii, mode="rtcrossdist",verb=True)
+dists,tms,cts,upts,vars,rtDist,rtTPDist = dt.compute(testtraj,radii=radii, mode="rtcrossdist",verb=True)
 print(tms)
 hist,bins = np.histogram(np.concatenate([np.array(rtDist[-2][1]),np.array(rtDist[1][-2])]))
 plt.plot(bins[:-1],hist)
@@ -60,5 +60,5 @@ plt.show()
 
 
 print("Short test: radii and bins mode")
-dists,tms,cts,upts = dt.compute(testtraj,radii=radii, mode="rtbins",verb=True)
+dists,tms,cts,upts,vars = dt.compute(testtraj,radii=radii, mode="rtbins",verb=True)
 print(tms)

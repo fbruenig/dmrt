@@ -109,9 +109,9 @@ class DiffTools():
     def pydmrt(self, inputVec, start=-2.0, interval=0.1, end=2.0, mode="rtcross", verb=False,radii=None):
         print("WARNING: this wrapper is deprecated! Use DiffTools.compute(args) instead.")
         if radii is not None:
-            dmrtTms, dmrtCts, dmrtUpts, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInpRadii(self.mode,int(verb),inputVec,radii)
+            dmrtTms, dmrtCts, dmrtUpts, dmrtVars, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInpRadii(self.mode,int(verb),inputVec,radii)
         else:
-            dmrtTms, dmrtCts, dmrtUpts, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInp(inputVec, start, interval, end,self.mode,int(verb))
+            dmrtTms, dmrtCts, dmrtUpts, dmrtVars, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInp(inputVec, start, interval, end,self.mode,int(verb))
         return dmrtTms, dmrtCts, dmrtUpts, dmrtDist, dmrtTPDist
 
 
