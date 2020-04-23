@@ -2,15 +2,14 @@
 
 from __future__ import print_function,division
 import diffTools_func as dtf
-import unitools as uni
 import numpy as np
 from scipy import integrate
 from os import listdir
 from os.path import isfile, join
+import pickle
 import gc
 
 import pydmrt as pydmrt_module
-
 
 
 
@@ -120,10 +119,10 @@ class DiffTools():
 def loadEvalTxt(folder,filestring,mode,optionalstring="",verbose=0, recompute = False, rtCorrect=True):
 	finalTms=[]
 	finalCts=[]
-	if uni.checkForPkl(folder,optionalstring+"_tms")==True and recompute==False:
-		tms =   uni.openTemp(folder+filestring+mode+"_"+optionalstring+"_tms.pkl")
-		cts =   uni.openTemp(folder+filestring+mode+"_"+optionalstring+"_cts.pkl")
-		dists = uni.openTemp(folder+filestring+mode+"_"+optionalstring+"_dists.pkl")
+	if checkForPkl(folder,optionalstring+"_tms")==True and recompute==False:
+		tms =   openTemp(folder+filestring+mode+"_"+optionalstring+"_tms.pkl")
+		cts =   openTemp(folder+filestring+mode+"_"+optionalstring+"_cts.pkl")
+		dists = openTemp(folder+filestring+mode+"_"+optionalstring+"_dists.pkl")
 		return tms,cts,dists
 	for f in listdir(folder):
 		if f.startswith(filestring) and mode in f and optionalstring in f and "cts" in f and not ".pkl" in f:
@@ -148,16 +147,16 @@ def loadEvalTxt(folder,filestring,mode,optionalstring="",verbose=0, recompute = 
 	if "rt" in mode and rtCorrect:
 		tms = tms.T + tms
 		tms = +np.tril(tms)-np.triu(tms)
-	uni.safeTemp(tms,folder+filestring+mode+"_"+optionalstring+"_tms.pkl")
-	uni.safeTemp(cts,folder+filestring+mode+"_"+optionalstring+"_cts.pkl")
-	uni.safeTemp(dists,folder+filestring+mode+"_"+optionalstring+"_dists.pkl")
+	safeTemp(tms,folder+filestring+mode+"_"+optionalstring+"_tms.pkl")
+	safeTemp(cts,folder+filestring+mode+"_"+optionalstring+"_cts.pkl")
+	safeTemp(dists,folder+filestring+mode+"_"+optionalstring+"_dists.pkl")
 	return tms,cts,dists
 
 
 def getSolRdfFromTxt(folder,filestring,optionalstring, mfpt="mfpt",cross="cross",verbose=0, recompute=False):
 		finalRdf=[]
-		if uni.checkForPkl(folder,optionalstring+"_hist")==True and recompute==False:
-			rdf =   uni.openTemp(folder+filestring+"_"+optionalstring+"_hist.pkl")
+		if checkForPkl(folder,optionalstring+"_hist")==True and recompute==False:
+			rdf =   openTemp(folder+filestring+"_"+optionalstring+"_hist.pkl")
 			return rdf
 
 		for f in listdir(folder):

@@ -6,6 +6,31 @@ import numpy as np
 
 epsilon = np.finfo(float).eps
 
+def checkForPkl(folder, optional=""):
+    for f in listdir(folder):
+        if f.endswith(".pkl") and optional in f:
+            return True
+    return False
+
+def openTemp(tempf):
+    with open(tempf, 'rb') as input:
+        try:
+            obj = pickle.load(input,encoding='latin1')
+        except UnicodeDecodeError:
+            return openTemp2to3(tempf)
+    return obj
+
+def openTemp2to3(tempf):
+    with open(tempf, 'rb') as input:
+        u = pickle._Unpickler(input)
+        obj = u.load()
+    return obj
+
+def safeTemp(obj, tempf):
+    with open(tempf, 'wb') as output:
+        pickle.dump(obj, output)
+
+
 def averageSelFilter(dmrts,filt):
     avg = []
     for i,d in enumerate(dmrts):
