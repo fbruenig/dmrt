@@ -18,7 +18,7 @@ testtraj = np.loadtxt("./test_traj_doublewell_od.txt")
 dt=DiffTools()
 
 #&inputVec1, &start, &interval,&end,&mode,&verb
-dmrtTms, dmrtCts, dmrtUpts, dmrtDist, dmrtTPDist = dt.pydmrt(testtraj, -1.7, 0.1, 1.7, "rtcross",True)
+dmrtTms, dmrtCts, dmrtUpts, dmrtVars, dmrtTPDist = dt.pydmrt(testtraj, -1.7, 0.1, 1.7, "mfptcross",True)
 
 refTms = np.loadtxt("./reference_Tms.txt")
 refCts = np.loadtxt("./reference_Cts.txt")
@@ -44,14 +44,14 @@ final,ddists, ddmrt, diff = fullAnalysis(tms, cts, dists, rdf, rmin = -1.5 , rma
                 mfpt="rt",cross="cross", dim=1, verbose=True, smoothwidth=0.0)
 
 plt.plot(ddists,final)
-plt.plot(ddists, np.ones(ddists.shape),'--')
+plt.semilogy(ddists, np.ones(ddists.shape),'--')
 plt.title("diffusivity profile of overdamped Langevin simulation")
 plt.show()
 
 
 print("Short test: radii mode")
 radii = [-2,-1.5,0.0,1.5,2]
-dists,tms,cts,upts,vars,rtDist,rtTPDist = dt.compute(testtraj,radii=radii, mode="rtcrossdist",verb=True)
+dists,tms,cts,upts,vars,rtDist,rtTPDist = dt.compute(testtraj,radii=radii, mode="mfptcrossdist",verb=True)
 print(tms)
 hist,bins = np.histogram(np.concatenate([np.array(rtDist[-2][1]),np.array(rtDist[1][-2])]))
 plt.plot(bins[:-1],hist)
@@ -59,6 +59,6 @@ plt.title("MFPT distribution of doublewell barrier hopping.")
 plt.show()
 
 
-print("Short test: radii and bins mode")
+print("Short test: radii and rtbins mode")
 dists,tms,cts,upts,vars = dt.compute(testtraj,radii=radii, mode="rtbins",verb=True)
 print(tms)

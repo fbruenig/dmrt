@@ -170,7 +170,7 @@ def getSolRdfFromTxt(folder,filestring,optionalstring, mfpt="mfpt",cross="cross"
 			rdf[:,1]=np.add(rdf[:,1],r[:,1])
 		if cross=="cross":
 			rdf[:-1,0]=(rdf[1:,0]+rdf[:-1,0])/2
-		uni.safeTemp(rdf,folder+filestring+"_"+optionalstring+"_hist.pkl")
+		safeTemp(rdf,folder+filestring+"_"+optionalstring+"_hist.pkl")
 		return rdf
 
 
@@ -190,7 +190,7 @@ def fullAnalysis(dmrtMat, countsMat,dists, rdf, rmin = -1.5, rmax= 1.5,minVal = 
         ddmrt,ddists = dtf.diffDmrtMatYann(dmrtMat,dists,smoothwidth)
     ddmrt = ddmrt[:,:-1]
     np.fill_diagonal(ddmrt,0.0)
-    ddmrt[ddmrt == 0] = uni.epsilon
+    ddmrt[ddmrt == 0] = 2.22044604925e-16 # epsilon
 
     rdf[:,1]=rdf[:,1]/np.sum(rdf[:,1])
 
@@ -214,6 +214,7 @@ def fullAnalysis(dmrtMat, countsMat,dists, rdf, rmin = -1.5, rmax= 1.5,minVal = 
     finalDmrts = dtf.averageSelFilter(diff,filtMat[1:,1:])
 
     final =1/finalDmrts
+    print(finalDmrts)
 
     return final,ddists, ddmrt, diff
 
