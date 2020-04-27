@@ -37,7 +37,7 @@ class DiffTools():
             tms = tms.T + tms
             cts = cts.T + cts
             tms = +np.tril(tms)-np.triu(tms)
-            tms = tms*2 #make them RTT again
+            #tms = tms*2 #make them RTT again, but this is not necessary anymore
             wars = wars.T + wars
         tms = tms/cts
         errs = np.sqrt(wars)/cts
