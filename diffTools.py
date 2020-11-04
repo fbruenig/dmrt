@@ -58,10 +58,33 @@ class DiffTools():
     def compute(self,data,start=-2.0, interval=0.1, end=2.0, mode=None, verb=False, radii=None):
         if mode is not None:
             self.decodeMode(mode)
-        if radii is not None:
-            dmrtTms, dmrtCts, dmrtUpts, dmrtVars, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInpRadii(self.mode,int(verb),data,radii)
+        if data.shape[1]!=2:
+            print("More than 1 dimension parsed. Evaluating each dim. seperately!")
+            dmrtTmss, dmrtCtss, dmrtUptss, dmrtVarss, dmrtDists, dmrtTPDists = [],[],[],[],[],[]
+            for i in range(data.shape[1]-1):
+                if radii is not None:
+                  dmrtTms, dmrtCts, dmrtUpts, dmrtVars, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInpRadii(self.mode,int(verb),data[:,[0,i+1]],radii)
+                else:
+                  dmrtTms, dmrtCts, dmrtUpts, dmrtVars, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInp(data[:,[0,i+1]], start, interval, end,self.mode,int(verb))
+                dmrtTmss.append(dmrtTms)
+                dmrtCtss.append(dmrtCts)
+                dmrtUptss.append(dmrtUpts)
+                dmrtVarss.append(dmrtVarss)
+                dmrtDists.append(dmrtDist)
+                dmrtTPDists.append(dmrtTPDist)
+            dmrtTms = np.sum(dmrtTmss,axis=-1)
+            dmrtCts = np.sum(dmrtCtss,axis=-1)
+            dmrtUpts = np.sum(dmrtUptss,axis=-1)
+            dmrtVars = np.mean(dmrtVarss,axis=-1)
+            dmrtDists = []
+            dmrtTPDist = []
+            #dmrtDists = [[[]] for i in tp for tp in tp2 for tp2 in dmrtDist]
+
         else:
-            dmrtTms, dmrtCts, dmrtUpts, dmrtVars, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInp(data, start, interval, end,self.mode,int(verb))
+            if radii is not None:
+                dmrtTms, dmrtCts, dmrtUpts, dmrtVars, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInpRadii(self.mode,int(verb),data,radii)
+            else:
+                dmrtTms, dmrtCts, dmrtUpts, dmrtVars, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInp(data, start, interval, end,self.mode,int(verb))
         gc.collect()
         if self.rtt or self.mfpt:
             ret1,ret2,ret3,ret4 = self.calcTimes(dmrtTms,dmrtCts,dmrtVars,rtt=self.rtt)
