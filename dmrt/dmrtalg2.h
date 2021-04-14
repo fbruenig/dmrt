@@ -56,7 +56,7 @@ public:
 //    void updateVectorsMFPTCont(vector<vector<double> > &dmrt, vector<vector<int> > &counts, const double time);
     void updateDMRTatQf(const int i, vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time);
     void updateQfatQ(const int i, const double time);
- 
+
     //Deprecated!
     void updateDMRTatQfWithDistribution(const int i, vector<vector<double> > &dmrt, vector<vector<int> > &counts, vector<vector<int> > &upts, const double time);
     void updateQfatQWithDistribution(const int i, const double time);
@@ -103,6 +103,7 @@ private:
     int mDataColumn;
 
     bool recordMFPTdistribution;
+    bool onlyLongest;
 
 };
 

@@ -29,6 +29,7 @@ void dmrtMain::decodeMode()
 {
     if (strncmp(mMode,"rt",2)==0){bRt=true;}
     else if (strncmp(mMode,"mfpt",4)==0){bMfpt=true;}
+    else if (strncmp(mMode,"lfpt",4)==0){bMfpt=true;}
     else if (strncmp(mMode,"cftp",4)==0){bCftp=true;}
     else if (strncmp(mMode,"ptpx",4)==0){bPtpx=true;}
     else if (strncmp(mMode,"rate",4)==0){bRate=true;}
@@ -141,7 +142,7 @@ void dmrtMain::execute2(vector< vector<double> >* finalDmrts, vector< vector<int
                 eval.getRTTfrom2DVectorCross((*finalDmrts),(*finalCounts),(*finalUpts),vec);
             }
         }
-        else if (strncmp(this->mMode,"mfpt",4)==0 || strncmp(this->mMode,"rate",4)==0)
+        else if (strncmp(this->mMode,"mfpt",4)==0 || strncmp(this->mMode,"rate",4)==0 || strncmp(this->mMode,"lfpt",4)==0)
         {
             if (strncmp(this->mMode+4,"bins",4)==0)
             {
