@@ -66,16 +66,17 @@ class DiffTools():
                   dmrtTms, dmrtCts, dmrtUpts, dmrtVars, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInpRadii(self.mode,int(verb),data[:,[0,i+1]],radii)
                 else:
                   dmrtTms, dmrtCts, dmrtUpts, dmrtVars, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInp(data[:,[0,i+1]], start, interval, end,self.mode,int(verb))
-                dmrtTmss.append(dmrtTms)
-                dmrtCtss.append(dmrtCts)
-                dmrtUptss.append(dmrtUpts)
-                dmrtVarss.append(dmrtVarss)
+                dmrtTmss.append(np.array(dmrtTms))
+                dmrtCtss.append(np.array(dmrtCts))
+                dmrtUptss.append(np.array(dmrtUpts))
+                dmrtVarss.append(np.array(dmrtVars))
                 dmrtDists.append(dmrtDist)
                 dmrtTPDists.append(dmrtTPDist)
-            dmrtTms = np.sum(dmrtTmss,axis=-1)
-            dmrtCts = np.sum(dmrtCtss,axis=-1)
-            dmrtUpts = np.sum(dmrtUptss,axis=-1)
-            dmrtVars = np.mean(dmrtVarss,axis=-1)
+            dmrtTms = np.sum(dmrtTmss,axis=0)
+            dmrtTms[-1,:] = dmrtTmss[0][-1,:]
+            dmrtCts = np.sum(dmrtCtss,axis=0)
+            dmrtUpts = np.sum(dmrtUptss,axis=0)
+            dmrtVars = np.mean(dmrtVarss,axis=0)
             dmrtDists = []
             dmrtTPDist = []
             #dmrtDists = [[[]] for i in tp for tp in tp2 for tp2 in dmrtDist]
