@@ -47,8 +47,10 @@ dmrtalg2::dmrtalg2(const char *mode, bool verb, const double escapeD, const doub
     mDataColumn = dataColumn;
     getRadiiVec(mRadii,escapeD,minD,dR);
     mVecLength = mRadii.size();
-    if (strncmp(this->mMode+6,"dist",4)==0 || strncmp(this->mMode+8,"dist",4)==0 || strncmp(this->mMode+7,"dist",4)==0 ||strncmp(this->mMode+9,"dist",4)==0){this->recordMFPTdistribution=true;}
+    if (strncmp(this->mMode+6,"dist",4)==0 || strncmp(this->mMode+8,"dist",4)==0 || strncmp(this->mMode+7,"dist",4)==0 ||strncmp(this->mMode+9,"dist",4)==0){recordMFPTdistribution=true;}
     else{recordMFPTdistribution=false;}
+    if (strncmp(this->mMode,"lfpt",4)==0){onlyLongest=true;}
+    else{onlyLongest=false;}
     // THESE vectors need to be initialized!!!
     //this->mfptDistribution = vector<vector<vector<double> > > (mVecLength,vector<vector<double>>(mVecLength,vector<double>(0)));
     //this->fptDistribution = vector<vector<double> > (2,vector<double>(0));
@@ -62,8 +64,10 @@ dmrtalg2::dmrtalg2(const char *mode, bool verb, const vector<double>& radii, con
     mInd = 0;
     mDataColumn = dataColumn;
     mVecLength = mRadii.size();
-    if (strncmp(this->mMode+6,"dist",4)==0 || strncmp(this->mMode+8,"dist",4)==0 || strncmp(this->mMode+7,"dist",4)==0 ||strncmp(this->mMode+9,"dist",4)==0){this->recordMFPTdistribution=true;}
+    if (strncmp(this->mMode+6,"dist",4)==0 || strncmp(this->mMode+8,"dist",4)==0 || strncmp(this->mMode+7,"dist",4)==0 ||strncmp(this->mMode+9,"dist",4)==0){recordMFPTdistribution=true;}
     else{recordMFPTdistribution=false;}
+    if (strncmp(this->mMode,"lfpt",4)==0){onlyLongest=true;}
+    else{onlyLongest=false;}
     // THESE vectors need to be initialized!!!
     //this->mfptDistribution = vector<vector<vector<double> > > (mVecLength,vector<vector<double>>(mVecLength,vector<double>(0)));
     //this->fptDistribution = vector<vector<double> > (2,vector<double>(0));
@@ -198,9 +202,12 @@ void dmrtalg2::updateQfatQ(const int i,const double time)
     }
     else
     {
-        locDmrt[mInd][i]+=  locStart[mInd][i]-time;
-        locCounts[mInd][i]++;
-        fptDistribution[mInd][i].push_back(locStart[mInd][i]-time);
+        if ( onlyLongest == false )
+        {
+            locDmrt[mInd][i]+=  locStart[mInd][i]-time;
+            locCounts[mInd][i]++;
+            fptDistribution[mInd][i].push_back(locStart[mInd][i]-time);
+        }
     }
 }
 

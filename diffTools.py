@@ -15,12 +15,13 @@ import pydmrt as pydmrt_module
 
 class DiffTools():
 
-    def __init__(self,mode=None,rtt=True,mfpt=False,ptpx=False,cross=True,bins=False,dist=False):
+    def __init__(self,mode=None,rtt=True,mfpt=False,lfpt=False,ptpx=False,cross=True,bins=False,dist=False):
         if mode is not None:
             self.decodeMode(mode)
         else:
             self.rtt=rtt
             self.mfpt=mfpt
+            self.lfpt=lfpt
             self.ptpx=ptpx
             self.bins=bins
             self.cross=cross
@@ -97,11 +98,13 @@ class DiffTools():
 
     def decodeMode(self,mode):
         if mode.startswith("rt"):
-            self.rtt,self.mfpt,self.ptpx=True,False,False
+            self.rtt,self.mfpt,self.lfpt,self.ptpx=True,False,False,False
         elif mode.startswith("mfpt"):
-            self.rtt,self.mfpt,self.ptpx=False,True,False
+            self.rtt,self.mfpt,self.lfpt,self.ptpx=False,True,False,False
+        elif mode.startswith("lfpt"):
+            self.rtt,self.mfpt,self,lfpt,self.ptpx=False,False,True,False
         elif mode.startswith("ptpx"):
-            self.rtt,self.mfpt,self.ptpx=False,False,True
+            self.rtt,self.mfpt,self,lfpt,self.ptpx=False,False,True,False
         if "bins" in mode:
             self.cross,self.bins=False,True
         elif "cross" in mode:
@@ -117,6 +120,8 @@ class DiffTools():
             mode="rt"
         elif self.mfpt:
             mode="mfpt"
+        elif self.lfpt:
+            mode="lfpt"
         elif self.ptpx:
             mode="ptpx"
         if self.cross:
