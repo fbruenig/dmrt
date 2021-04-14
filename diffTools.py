@@ -88,7 +88,7 @@ class DiffTools():
             else:
                 dmrtTms, dmrtCts, dmrtUpts, dmrtVars, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInp(data, start, interval, end,self.mode,int(verb))
         gc.collect()
-        if self.rtt or self.mfpt:
+        if self.rtt or self.mfpt or self.lfpt:
             ret1,ret2,ret3,ret4 = self.calcTimes(dmrtTms,dmrtCts,dmrtVars,rtt=self.rtt)
         elif self.ptpx:
             return self.calcPTPR(dmrtTms,dmrtCts)
