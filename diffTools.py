@@ -102,9 +102,9 @@ class DiffTools():
         elif mode.startswith("mfpt"):
             self.rtt,self.mfpt,self.lfpt,self.ptpx=False,True,False,False
         elif mode.startswith("lfpt"):
-            self.rtt,self.mfpt,self,lfpt,self.ptpx=False,False,True,False
+            self.rtt,self.mfpt,self.lfpt,self.ptpx=False,False,True,False
         elif mode.startswith("ptpx"):
-            self.rtt,self.mfpt,self,lfpt,self.ptpx=False,False,True,False
+            self.rtt,self.mfpt,self.lfpt,self.ptpx=False,False,False,True
         if "bins" in mode:
             self.cross,self.bins=False,True
         elif "cross" in mode:
