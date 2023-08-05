@@ -56,12 +56,14 @@ class DiffTools():
         ptpx = (ptpx0 + ptpx1)/total
         return dists, ptpx, total, ptpx0/total0, ptpx1/total1
 
-    def compute(self,data,start=-2.0, interval=0.1, end=2.0, mode=None, verb=False, radii=None):
+    def compute(self,data,start=-2.0, interval=0.1, end=2.0, mode=None, verb=False, radii=None, errorCalc = None):
         if mode is not None:
             self.decodeMode(mode)
         if data.shape[1]!=2:
             print("More than 1 dimension parsed. Evaluating each dim. seperately!")
-            dmrtTmss, dmrtCtss, dmrtUptss, dmrtVarss, dmrtDists, dmrtTPDists = [],[],[],[],[],[]
+            if errorCalc == "bootstrap":
+                print("Error is bootstrapped.")
+            dmrtTmss, dmrtCtss, dmrtUptss, dmrtVarss, dmrtDists, dmrtTPDists, dmrtErrss = [],[],[],[],[],[],[]
             for i in range(data.shape[1]-1):
                 if radii is not None:
                   dmrtTms, dmrtCts, dmrtUpts, dmrtVars, dmrtDist, dmrtTPDist = pydmrt_module.dmrtInpRadii(self.mode,int(verb),data[:,[0,i+1]],radii)
@@ -70,6 +72,8 @@ class DiffTools():
                 dmrtTmss.append(np.array(dmrtTms))
                 dmrtCtss.append(np.array(dmrtCts))
                 dmrtUptss.append(np.array(dmrtUpts))
+                if errorCalc == "bootstrap":
+                    dmrtErrss.append(np.array(dmrtTms)[:-1,:]/np.array(dmrtCts))
                 dmrtVarss.append(np.array(dmrtVars))
                 dmrtDists.append(dmrtDist)
                 dmrtTPDists.append(dmrtTPDist)
@@ -78,6 +82,8 @@ class DiffTools():
             dmrtCts = np.sum(dmrtCtss,axis=0)
             dmrtUpts = np.sum(dmrtUptss,axis=0)
             dmrtVars = np.mean(dmrtVarss,axis=0)
+            if errorCalc == "bootstrap":
+                dmrtErrsBootstrap = np.std(dmrtErrss,axis=0)/np.sqrt(data.shape[1]-1)
             dmrtDists = []
             dmrtTPDist = []
             #dmrtDists = [[[]] for i in tp for tp in tp2 for tp2 in dmrtDist]
@@ -90,6 +96,8 @@ class DiffTools():
         gc.collect()
         if self.rtt or self.mfpt or self.lfpt:
             ret1,ret2,ret3,ret4 = self.calcTimes(dmrtTms,dmrtCts,dmrtVars,rtt=self.rtt)
+            if errorCalc == "bootstrap" and data.shape[1]!=2:
+                ret3 = dmrtErrsBootstrap
         elif self.ptpx:
             return self.calcPTPR(dmrtTms,dmrtCts)
         if self.dist:
@@ -103,9 +111,9 @@ class DiffTools():
         elif mode.startswith("mfpt"):
             self.rtt,self.mfpt,self.lfpt,self.ptpx=False,True,False,False
         elif mode.startswith("lfpt"):
-            self.rtt,self.mfpt,self,lfpt,self.ptpx=False,False,True,False
+            self.rtt,self.mfpt,self.lfpt,self.ptpx=False,False,True,False
         elif mode.startswith("ptpx"):
-            self.rtt,self.mfpt,self,lfpt,self.ptpx=False,False,True,False
+            self.rtt,self.mfpt,self.lfpt,self.ptpx=False,False,True,False
         if "bins" in mode:
             self.cross,self.bins=False,True
         elif "cross" in mode:
