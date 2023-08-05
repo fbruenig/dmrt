@@ -27,6 +27,9 @@ class DiffTools():
             self.cross=cross
             self.dist=dist
             self.encodeMode()
+
+        self.ptpxAnalyticalDist = None
+        self.pt = 0.0       
         return
 
     def calcTimes(self,dmrtTms,dmrtCts,dmrtVars,rtt=False):
@@ -44,7 +47,7 @@ class DiffTools():
         errs = np.sqrt(wars)/cts
         return dists,tms,cts,errs
 
-    def calcPTPR(self,dmrtTms,dmrtCts):
+    def calcPTPR(self,dmrtTms,dmrtCts,N):
         normal0 = np.array(dmrtTms)[:-1,0]
         normal1 = np.array(dmrtTms)[:-1,1]
         ptpx0= np.array(dmrtCts)[:,0]
@@ -53,6 +56,12 @@ class DiffTools():
         total0 = normal0 + ptpx0
         total1 = normal1 + ptpx1
         total = normal0 + normal1 + ptpx0 + ptpx1
+        if self.ptpxAnalyticalDist is not None:
+            n = np.sum(total)
+            total = self.ptpxAnalyticalDist(dists-np.diff(dists)[0]/2)*n
+            self.pt = np.sum(ptpx0 + ptpx1)/n
+            print("Total array length for analytical ptpx eval: %i"%(n))
+            print("Ratio of total array length: %.3f"%(n/N))
         ptpx = (ptpx0 + ptpx1)/total
         return dists, ptpx, total, ptpx0/total0, ptpx1/total1
 
@@ -99,7 +108,7 @@ class DiffTools():
             if errorCalc == "bootstrap" and data.shape[1]!=2:
                 ret3 = dmrtErrsBootstrap
         elif self.ptpx:
-            return self.calcPTPR(dmrtTms,dmrtCts)
+            return self.calcPTPR(dmrtTms,dmrtCts,(data.shape[1]-1)*data.shape[0]), [dmrtTms,dmrtCts,dmrtUpts,dmrtVars,dmrtDist,dmrtTPDist]
         if self.dist:
             return ret1,ret2,ret3,ret4,np.array(dmrtUpts),dmrtDist,dmrtTPDist
         else:
@@ -113,7 +122,7 @@ class DiffTools():
         elif mode.startswith("lfpt"):
             self.rtt,self.mfpt,self.lfpt,self.ptpx=False,False,True,False
         elif mode.startswith("ptpx"):
-            self.rtt,self.mfpt,self.lfpt,self.ptpx=False,False,True,False
+            self.rtt,self.mfpt,self.lfpt,self.ptpx=False,False,False,True
         if "bins" in mode:
             self.cross,self.bins=False,True
         elif "cross" in mode:
